@@ -172,15 +172,17 @@ textarea.field {
     linear-gradient(120deg, rgba(7, 39, 91, 0.08), rgba(8, 183, 154, 0.06)),
     url("/case-education.png");
 }
+@media (max-width: 1023px) {
+  .desktop-nav {
+    display: none !important;
+  }
+}
 @media (max-width: 760px) {
   .container {
     width: min(100% - 24px, 1450px);
   }
   .section-title {
     font-size: 22px;
-  }
-  .desktop-nav {
-    display: none !important;
   }
   .hero-grid,
   .four-grid,

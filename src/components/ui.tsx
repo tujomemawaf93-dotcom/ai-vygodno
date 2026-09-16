@@ -761,6 +761,31 @@ export function Header() {
     path === "/compare" || path === "/priorities" || path === "/scenarios";
   const isPilotActive = path === "/pilot";
 
+  // Блокировка фонового скролла при открытом мобильном меню
+  useEffect(() => {
+    if (open) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [open]);
+
+  // Автоматическое закрытие при смене страницы или нажатии Escape
+  useEffect(() => {
+    setOpen(false);
+  }, [path]);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
   return (
     <>
       <header className="sticky top-0 z-30 border-b border-[#eaf2fb] bg-white/95 backdrop-blur">
@@ -768,7 +793,7 @@ export function Header() {
           <Logo small />
 
           {/* Desktop navigation: сгруппированная архитектура */}
-          <nav className="desktop-nav flex h-full items-center gap-1">
+          <nav className="desktop-nav hidden lg:flex h-full items-center gap-1">
             {/* 1. Калькулятор */}
             <Link
               href="/calculator"
@@ -954,7 +979,7 @@ export function Header() {
             )}
 
             <button
-              className="md:hidden flex items-center justify-center w-11 h-11 rounded-lg text-[#082460] hover:bg-[#f0f6fd] transition-colors -mr-2"
+              className="lg:hidden flex items-center justify-center w-11 h-11 rounded-lg text-[#082460] hover:bg-[#f0f6fd] transition-colors -mr-2"
               onClick={() => setOpen(!open)}
               aria-label={open ? "Закрыть меню" : "Открыть меню"}
             >
@@ -962,173 +987,239 @@ export function Header() {
             </button>
           </div>
         </div>
+      </header>
 
-        {/* Мобильное адаптивное меню (Drawer / Sheet с touch targets >= 44px) */}
-        {open && (
-          <>
-            <div
-              className="fixed inset-0 top-15 bg-black/40 backdrop-blur-xs z-40 md:hidden"
+      {/* Полноэкранное мобильное меню (полная изоляция от backdrop-blur и правильный viewport) */}
+      {open && (
+        <div
+          className="fixed inset-0 z-50 flex flex-col bg-white lg:hidden animate-in fade-in duration-150"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Навигационное меню"
+        >
+          {/* Верхняя строка мобильного меню: Логотип и закрытие */}
+          <div className="flex h-15 shrink-0 items-center justify-between px-4 border-b border-[#eaf2fb] bg-white">
+            <Logo small />
+            <button
               onClick={() => setOpen(false)}
-              aria-hidden="true"
-            />
-            <div className="fixed inset-x-0 top-15 bottom-0 bg-white z-50 overflow-y-auto p-4 pb-10 space-y-3 shadow-2xl border-t border-[#e2edf9] md:hidden">
-              {/* Главный CTA калькулятора */}
-              <Link
-                onClick={() => setOpen(false)}
-                href="/calculator"
-                className="btn btn-primary w-full min-h-[46px] text-sm font-bold flex items-center justify-between px-4 no-underline rounded-xl"
-              >
-                <span className="flex items-center gap-2">
-                  <Calculator size={18} />
-                  Калькулятор окупаемости
-                </span>
-                <ArrowRight size={16} />
-              </Link>
+              className="flex items-center justify-center w-11 h-11 rounded-lg text-[#082460] hover:bg-[#f0f6fd] transition-colors -mr-2"
+              aria-label="Закрыть меню"
+            >
+              <X size={24} />
+            </button>
+          </div>
 
-              {/* Блок Анализ */}
-              <div className="rounded-xl bg-[#f8fbfe] border border-[#e5effa] p-2.5 space-y-1">
-                <span className="text-[11px] font-extrabold text-[#6483ad] uppercase tracking-wider px-2 py-1 block">
+          {/* Скроллируемое тело меню со ВСЕМИ разделами сайта */}
+          <div className="flex-1 overflow-y-auto p-4 pb-12 space-y-4 overscroll-contain">
+            {/* Главный CTA калькулятора */}
+            <Link
+              onClick={() => setOpen(false)}
+              href="/calculator"
+              className="btn btn-primary w-full min-h-[50px] text-sm font-bold flex items-center justify-between px-4 no-underline rounded-xl shadow-md"
+            >
+              <span className="flex items-center gap-2.5">
+                <Calculator size={20} />
+                <span>Калькулятор окупаемости</span>
+              </span>
+              <span className="flex items-center gap-1 text-xs font-semibold text-[#a5dfd4]">
+                Основной <ArrowRight size={16} />
+              </span>
+            </Link>
+
+            {/* Блок Анализ решений */}
+            <div className="rounded-xl bg-[#f8fbfe] border border-[#e5effa] p-3 space-y-1.5">
+              <div className="flex items-center justify-between px-2 py-0.5">
+                <span className="text-[11px] font-extrabold text-[#6483ad] uppercase tracking-wider">
                   Анализ решений
                 </span>
-                <Link
-                  onClick={() => setOpen(false)}
-                  href="/compare"
-                  className={`min-h-[44px] flex items-center justify-between px-3 py-2 rounded-lg text-xs font-semibold no-underline transition-colors ${
-                    path === "/compare" ? "bg-[#eaf5ff] text-[#0879e8]" : "text-[#08275b] hover:bg-white"
-                  }`}
-                >
-                  <span className="flex items-center gap-2">
-                    <Scale size={16} className="text-[#0879e8]" />
-                    Сравнение решений
-                  </span>
-                  <span className="text-[10px] text-[#718dae]">SaaS vs Dev</span>
-                </Link>
-                <Link
-                  onClick={() => setOpen(false)}
-                  href="/priorities"
-                  className={`min-h-[44px] flex items-center justify-between px-3 py-2 rounded-lg text-xs font-semibold no-underline transition-colors ${
-                    path === "/priorities" ? "bg-[#eaf5ff] text-[#0879e8]" : "text-[#08275b] hover:bg-white"
-                  }`}
-                >
-                  <span className="flex items-center gap-2">
-                    <Target size={16} className="text-[#05b89f]" />
-                    Матрица приоритетов
-                  </span>
-                  <span className="text-[10px] text-[#718dae]">2x2 матрица</span>
-                </Link>
-                <Link
-                  onClick={() => setOpen(false)}
-                  href="/scenarios"
-                  className={`min-h-[44px] flex items-center justify-between px-3 py-2 rounded-lg text-xs font-semibold no-underline transition-colors ${
-                    path === "/scenarios" ? "bg-[#eaf5ff] text-[#0879e8]" : "text-[#08275b] hover:bg-white"
-                  }`}
-                >
-                  <span className="flex items-center gap-2">
-                    <Sparkles size={16} className="text-[#e28c05]" />
-                    Сценарии & What-If
-                  </span>
-                  <span className="text-[10px] text-[#718dae]">Стресс-тесты</span>
-                </Link>
-                <Link
-                  onClick={() => setOpen(false)}
-                  href="/scenarios#what-if"
-                  className="min-h-[44px] flex items-center justify-between px-3 py-2 rounded-lg text-xs font-semibold text-[#08275b] hover:bg-white no-underline transition-colors"
-                >
-                  <span className="flex items-center gap-2">
-                    <SlidersHorizontal size={16} className="text-[#0879e8]" />
-                    What-If / Чувствительность
-                  </span>
-                  <span className="text-[10px] text-[#718dae]">Ползунки 2.0</span>
-                </Link>
+                <span className="text-[10px] text-[#8fa7c4]">Сравнение и риски</span>
               </div>
 
-              {/* Блок Пилот */}
-              <div className="rounded-xl bg-[#f4fcf9] border border-[#d2f3ea] p-2.5 space-y-1">
-                <span className="text-[11px] font-extrabold text-[#009b86] uppercase tracking-wider px-2 py-1 block">
-                  Пилот и верификация
+              <Link
+                onClick={() => setOpen(false)}
+                href="/compare"
+                className={`min-h-[46px] flex items-center justify-between px-3 py-2 rounded-lg text-xs font-semibold no-underline transition-colors ${
+                  path === "/compare" ? "bg-[#eaf5ff] text-[#0879e8]" : "text-[#08275b] hover:bg-white"
+                }`}
+              >
+                <span className="flex items-center gap-2.5">
+                  <Scale size={18} className="text-[#0879e8] shrink-0" />
+                  <div>
+                    <div className="font-bold text-[13px]">Сравнение решений</div>
+                    <div className="text-[11px] font-normal text-[#718dae]">SaaS vs Интеграция vs Заказная</div>
+                  </div>
                 </span>
-                <Link
-                  onClick={() => setOpen(false)}
-                  href="/pilot"
-                  className={`min-h-[44px] flex items-center justify-between px-3 py-2 rounded-lg text-xs font-semibold no-underline transition-colors ${
-                    path === "/pilot" ? "bg-[#dcf6ef] text-[#008775]" : "text-[#08275b] hover:bg-white"
-                  }`}
-                >
-                  <span className="flex items-center gap-2">
-                    <Rocket size={16} className="text-[#05b89f]" />
-                    Пилот 30 дней
-                  </span>
-                  <span className="text-[10px] text-[#718dae]">Регламент</span>
-                </Link>
-                <Link
-                  onClick={() => setOpen(false)}
-                  href="/pilot#plan-fact"
-                  className="min-h-[44px] flex items-center justify-between px-3 py-2 rounded-lg text-xs font-semibold text-[#08275b] hover:bg-white no-underline transition-colors"
-                >
-                  <span className="flex items-center gap-2">
-                    <BarChart2 size={16} className="text-[#0879e8]" />
-                    План vs Факт
-                  </span>
-                  <span className="text-[10px] text-[#718dae]">Вердикт</span>
-                </Link>
-              </div>
+                <ArrowRight size={14} className="text-slate-300" />
+              </Link>
 
-              {/* Прямые ссылки */}
-              <div className="space-y-1 pt-1">
-                <Link
-                  onClick={() => setOpen(false)}
-                  href="/cases"
-                  className={`min-h-[44px] flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-bold no-underline transition-colors border ${
-                    path === "/cases"
-                      ? "bg-[#eef5fc] border-[#cce0f6] text-[#0879e8]"
-                      : "bg-white border-[#e5effa] text-[#08275b] hover:bg-[#f8fbff]"
-                  }`}
-                >
-                  <span className="flex items-center gap-2">
-                    <Layers size={16} className="text-[#05b89f]" />
-                    Кейсы и каталог процессов
-                  </span>
-                  <ArrowRight size={14} className="text-slate-400" />
-                </Link>
+              <Link
+                onClick={() => setOpen(false)}
+                href="/priorities"
+                className={`min-h-[46px] flex items-center justify-between px-3 py-2 rounded-lg text-xs font-semibold no-underline transition-colors ${
+                  path === "/priorities" ? "bg-[#eaf5ff] text-[#0879e8]" : "text-[#08275b] hover:bg-white"
+                }`}
+              >
+                <span className="flex items-center gap-2.5">
+                  <Target size={18} className="text-[#05b89f] shrink-0" />
+                  <div>
+                    <div className="font-bold text-[13px]">Матрица приоритетов</div>
+                    <div className="text-[11px] font-normal text-[#718dae]">Что внедрять первым (2x2 матрица)</div>
+                  </div>
+                </span>
+                <ArrowRight size={14} className="text-slate-300" />
+              </Link>
 
-                <Link
-                  onClick={() => setOpen(false)}
-                  href="/about"
-                  className={`min-h-[44px] flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-bold no-underline transition-colors border ${
-                    path === "/about"
-                      ? "bg-[#eef5fc] border-[#cce0f6] text-[#0879e8]"
-                      : "bg-white border-[#e5effa] text-[#08275b] hover:bg-[#f8fbff]"
-                  }`}
-                >
-                  <span className="flex items-center gap-2">
-                    <HelpCircle size={16} className="text-[#0879e8]" />
-                    О сервисе и методологии
-                  </span>
-                  <ArrowRight size={14} className="text-slate-400" />
-                </Link>
-              </div>
+              <Link
+                onClick={() => setOpen(false)}
+                href="/scenarios"
+                className={`min-h-[46px] flex items-center justify-between px-3 py-2 rounded-lg text-xs font-semibold no-underline transition-colors ${
+                  path === "/scenarios" ? "bg-[#eaf5ff] text-[#0879e8]" : "text-[#08275b] hover:bg-white"
+                }`}
+              >
+                <span className="flex items-center gap-2.5">
+                  <Sparkles size={18} className="text-[#e28c05] shrink-0" />
+                  <div>
+                    <div className="font-bold text-[13px]">Сценарии & What-If</div>
+                    <div className="text-[11px] font-normal text-[#718dae]">Базовый, стресс-тесты и прогноз</div>
+                  </div>
+                </span>
+                <ArrowRight size={14} className="text-slate-300" />
+              </Link>
 
-              {/* Мои проекты кнопка */}
-              <button
-                type="button"
+              <Link
                 onClick={() => {
                   setOpen(false);
-                  setShowProjects(true);
+                  const el = document.getElementById("what-if");
+                  if (el) el.scrollIntoView({ behavior: "smooth" });
                 }}
-                className="w-full min-h-[46px] flex items-center justify-between px-3.5 py-2.5 rounded-xl font-bold text-xs bg-[#eef8fd] text-[#0879e8] border border-[#cfe5fa] transition-colors"
+                href="/scenarios#what-if"
+                className="min-h-[46px] flex items-center justify-between px-3 py-2 rounded-lg text-xs font-semibold text-[#08275b] hover:bg-white no-underline transition-colors"
               >
-                <span className="flex items-center gap-2">
-                  <FolderKanban size={17} className="text-[#0879e8]" />
-                  Мои проекты и расчёты
+                <span className="flex items-center gap-2.5">
+                  <SlidersHorizontal size={18} className="text-[#0879e8] shrink-0" />
+                  <div>
+                    <div className="font-bold text-[13px]">Чувствительность 2.0</div>
+                    <div className="text-[11px] font-normal text-[#718dae]">Интерактивные ползунки и 2D-матрица</div>
+                  </div>
                 </span>
-                <span className="px-2 py-0.5 rounded-full bg-[#dbeefa] text-[#0879e8] font-extrabold text-[11px]">
-                  {savedProjects.length}
-                </span>
-              </button>
+                <ArrowRight size={14} className="text-slate-300" />
+              </Link>
             </div>
-          </>
-        )}
-      </header>
+
+            {/* Блок Пилот и верификация */}
+            <div className="rounded-xl bg-[#f4fcf9] border border-[#d2f3ea] p-3 space-y-1.5">
+              <div className="flex items-center justify-between px-2 py-0.5">
+                <span className="text-[11px] font-extrabold text-[#009b86] uppercase tracking-wider">
+                  Пилот и верификация
+                </span>
+                <span className="text-[10px] text-[#718dae]">Проверка расчётов</span>
+              </div>
+
+              <Link
+                onClick={() => setOpen(false)}
+                href="/pilot"
+                className={`min-h-[46px] flex items-center justify-between px-3 py-2 rounded-lg text-xs font-semibold no-underline transition-colors ${
+                  path === "/pilot" ? "bg-[#dcf6ef] text-[#008775]" : "text-[#08275b] hover:bg-white"
+                }`}
+              >
+                <span className="flex items-center gap-2.5">
+                  <Rocket size={18} className="text-[#05b89f] shrink-0" />
+                  <div>
+                    <div className="font-bold text-[13px]">Пилот 30 дней</div>
+                    <div className="text-[11px] font-normal text-[#718dae]">Регламент, этапы и чек-лист</div>
+                  </div>
+                </span>
+                <ArrowRight size={14} className="text-slate-300" />
+              </Link>
+
+              <Link
+                onClick={() => {
+                  setOpen(false);
+                  const el = document.getElementById("plan-fact");
+                  if (el) el.scrollIntoView({ behavior: "smooth" });
+                }}
+                href="/pilot#plan-fact"
+                className="min-h-[46px] flex items-center justify-between px-3 py-2 rounded-lg text-xs font-semibold text-[#08275b] hover:bg-white no-underline transition-colors"
+              >
+                <span className="flex items-center gap-2.5">
+                  <BarChart2 size={18} className="text-[#0879e8] shrink-0" />
+                  <div>
+                    <div className="font-bold text-[13px]">План vs Факт</div>
+                    <div className="text-[11px] font-normal text-[#718dae]">Замеры отклонений и итоговый вердикт</div>
+                  </div>
+                </span>
+                <ArrowRight size={14} className="text-slate-300" />
+              </Link>
+            </div>
+
+            {/* Блок Материалы и База знаний */}
+            <div className="rounded-xl bg-[#fdfaf5] border border-[#f5e9d5] p-3 space-y-1.5">
+              <div className="flex items-center justify-between px-2 py-0.5">
+                <span className="text-[11px] font-extrabold text-[#b87310] uppercase tracking-wider">
+                  Материалы и сервисы
+                </span>
+                <span className="text-[10px] text-[#718dae]">База знаний</span>
+              </div>
+
+              <Link
+                onClick={() => setOpen(false)}
+                href="/cases"
+                className={`min-h-[46px] flex items-center justify-between px-3 py-2 rounded-lg text-xs font-semibold no-underline transition-colors ${
+                  path === "/cases"
+                    ? "bg-[#faedd8] text-[#8c5200]"
+                    : "text-[#08275b] hover:bg-white"
+                }`}
+              >
+                <span className="flex items-center gap-2.5">
+                  <Layers size={18} className="text-[#05b89f] shrink-0" />
+                  <div>
+                    <div className="font-bold text-[13px]">Кейсы и каталог процессов</div>
+                    <div className="text-[11px] font-normal text-[#718dae]">Примеры внедрения и типовые задачи</div>
+                  </div>
+                </span>
+                <ArrowRight size={14} className="text-slate-300" />
+              </Link>
+
+              <Link
+                onClick={() => setOpen(false)}
+                href="/about"
+                className={`min-h-[46px] flex items-center justify-between px-3 py-2 rounded-lg text-xs font-semibold no-underline transition-colors ${
+                  path === "/about"
+                    ? "bg-[#faedd8] text-[#8c5200]"
+                    : "text-[#08275b] hover:bg-white"
+                }`}
+              >
+                <span className="flex items-center gap-2.5">
+                  <HelpCircle size={18} className="text-[#0879e8] shrink-0" />
+                  <div>
+                    <div className="font-bold text-[13px]">О сервисе и методологии</div>
+                    <div className="text-[11px] font-normal text-[#718dae]">Формулы, TCO, допущения и ограничения</div>
+                  </div>
+                </span>
+                <ArrowRight size={14} className="text-slate-300" />
+              </Link>
+            </div>
+
+            {/* Мои проекты кнопка */}
+            <button
+              type="button"
+              onClick={() => {
+                setOpen(false);
+                setShowProjects(true);
+              }}
+              className="w-full min-h-[48px] flex items-center justify-between px-4 py-2.5 rounded-xl font-bold text-xs bg-[#eef8fd] text-[#0879e8] border border-[#cfe5fa] transition-colors"
+            >
+              <span className="flex items-center gap-2.5">
+                <FolderKanban size={18} className="text-[#0879e8]" />
+                <span className="text-[13px]">Мои сохранённые проекты</span>
+              </span>
+              <span className="px-2.5 py-0.5 rounded-full bg-[#dbeefa] text-[#0879e8] font-extrabold text-[11px]">
+                {savedProjects.length}
+              </span>
+            </button>
+          </div>
+        </div>
+      )}
 
       <ProjectsModal isOpen={showProjects} onClose={() => setShowProjects(false)} />
     </>
