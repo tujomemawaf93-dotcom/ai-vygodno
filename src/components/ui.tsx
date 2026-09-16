@@ -1295,7 +1295,7 @@ export function MetricCard({
   asset?: string;
 }) {
   return (
-    <div className="card flex items-center gap-3 p-4">
+    <div className="card flex items-center gap-2.5 sm:gap-3 p-3 sm:p-4">
       <Icon type={type} asset={asset} size={28} />
       <div className="flex-1 min-w-0">
         <div className="text-[12px] font-bold flex items-center text-[#08275b]">

@@ -543,11 +543,108 @@ export default function PrioritiesPage() {
             </h2>
             <span className="text-xs text-[#637ba5] flex items-center gap-1">
               <span className="hidden md:inline">Хранится локально в вашем браузере</span>
-              <span className="md:hidden font-semibold text-[#0879e8]">← Прокрутите таблицу →</span>
+              <span className="md:hidden font-semibold text-[#0879e8]">{items.length} процессов в портфеле</span>
             </span>
           </div>
 
-          <div className="table-wrap">
+          {/* Мобильный список карточек процессов (виден только на < md) */}
+          {items.length > 0 ? (
+            <div className="block md:hidden space-y-3 mb-4">
+              {items.map((it) => (
+                <div
+                  key={it.id}
+                  onClick={() => setSelectedProcess(it)}
+                  className={`p-3.5 rounded-xl border transition-all cursor-pointer ${
+                    selectedProcess?.id === it.id
+                      ? "bg-[#f0fbf8] border-[#8ee4d5] shadow-xs"
+                      : "bg-white border-[#e0edf8]"
+                  }`}
+                >
+                  <div className="flex items-start justify-between gap-2 mb-2">
+                    <div>
+                      <h4 className="font-bold text-sm text-[#08275b] m-0">
+                        {it.name}
+                      </h4>
+                      <span className="text-xs text-[#637ba5]">
+                        {it.industry} • Сложность {it.complexity}/5
+                      </span>
+                    </div>
+                    <span
+                      className={`text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0 ${
+                        it.risk === "Низкий"
+                          ? "bg-[#e2fbf4] text-[#009b86]"
+                          : it.risk === "Повышенный"
+                          ? "bg-[#fff0f2] text-[#b93850]"
+                          : "bg-[#fff7e6] text-[#b37400]"
+                      }`}
+                    >
+                      {it.risk}
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-3 gap-2 p-2 rounded-lg bg-[#f7fafe] border border-[#e5effa] text-xs mb-2.5 text-center">
+                    <div>
+                      <span className="text-[10px] text-[#637ba5] block">Эффект E</span>
+                      <b className="font-bold text-[#05b89f]">{formatMoney(it.annualEffect)}</b>
+                    </div>
+                    <div>
+                      <span className="text-[10px] text-[#637ba5] block">ROI</span>
+                      <b className="font-bold text-[#08275b]">{formatROI(it.roi)}</b>
+                    </div>
+                    <div>
+                      <span className="text-[10px] text-[#637ba5] block">Окупаемость</span>
+                      <b className="font-medium text-[#496b99]">{formatPayback(it.paybackMonths)}</b>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between gap-2 pt-2 border-t border-[#edf4fc]">
+                    <select
+                      className="field h-8 text-xs py-0 px-2 w-auto bg-[#f8fbfe] border-[#cce0f5]"
+                      value={it.status}
+                      onClick={(e) => e.stopPropagation()}
+                      onChange={(e) =>
+                        updateItemStatus(it.id, e.target.value as ProjectStatus)
+                      }
+                    >
+                      <option value="Идея">Идея</option>
+                      <option value="Расчёт">Расчёт</option>
+                      <option value="Готов к пилоту">Готов к пилоту</option>
+                      <option value="Пилот">Пилот</option>
+                      <option value="Масштабирование">Масштабирование</option>
+                      <option value="Остановлен">Остановлен</option>
+                    </select>
+
+                    <div className="flex items-center gap-1">
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          openInCalculator(it);
+                        }}
+                        className="btn btn-outline text-xs py-1 px-2.5 min-h-[34px] flex items-center gap-1 text-[#0879e8]"
+                      >
+                        <ExternalLink size={13} /> В расчёт
+                      </button>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          removeItem(it.id);
+                        }}
+                        className="p-2 text-slate-400 hover:text-rose-600 rounded transition-colors"
+                        title="Удалить"
+                      >
+                        <Trash2 size={15} />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : null}
+
+          {/* Десктопная / планшетная таблица портфеля */}
+          <div className="table-wrap hidden md:block">
             <table className="w-full text-xs min-w-[720px] border-collapse">
               <thead>
                 <tr className="bg-[#f2f7fd] text-[#08275b]">

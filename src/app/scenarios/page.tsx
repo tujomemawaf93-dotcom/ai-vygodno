@@ -383,7 +383,7 @@ export default function Scenarios() {
                     setWhatIfHours(Number(e.target.value));
                     setWhatIfActive(true);
                   }}
-                  className="w-full h-1.5 accent-[#05b89f] cursor-pointer"
+                  className="w-full h-2 accent-[#05b89f] cursor-pointer py-2"
                 />
               </div>
 
@@ -406,7 +406,7 @@ export default function Scenarios() {
                     setWhatIfMonthly(Number(e.target.value));
                     setWhatIfActive(true);
                   }}
-                  className="w-full h-1.5 accent-[#0879e8] cursor-pointer"
+                  className="w-full h-2 accent-[#0879e8] cursor-pointer py-2"
                 />
               </div>
 
@@ -429,12 +429,12 @@ export default function Scenarios() {
                     setWhatIfOneTime(Number(e.target.value));
                     setWhatIfActive(true);
                   }}
-                  className="w-full h-1.5 accent-[#08275b] cursor-pointer"
+                  className="w-full h-2 accent-[#08275b] cursor-pointer py-2"
                 />
               </div>
 
               {/* Качество q и Реализация k */}
-              <div className="grid grid-cols-2 gap-3 pt-1 border-t border-[#edf4fc]">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1 border-t border-[#edf4fc]">
                 <div>
                   <div className="flex justify-between text-xs font-semibold mb-1 text-[#08275b]">
                     <span className="text-[#486b9a] flex items-center gap-1">
@@ -453,7 +453,7 @@ export default function Scenarios() {
                       setWhatIfQuality(Number(e.target.value));
                       setWhatIfActive(true);
                     }}
-                    className="w-full h-1.5 accent-[#05b89f] cursor-pointer"
+                    className="w-full h-2 accent-[#05b89f] cursor-pointer py-2"
                   />
                 </div>
 
@@ -475,7 +475,7 @@ export default function Scenarios() {
                       setWhatIfRealization(Number(e.target.value));
                       setWhatIfActive(true);
                     }}
-                    className="w-full h-1.5 accent-[#05b89f] cursor-pointer"
+                    className="w-full h-2 accent-[#05b89f] cursor-pointer py-2"
                   />
                 </div>
               </div>
@@ -600,11 +600,11 @@ export default function Scenarios() {
             </div>
 
             {/* Селекторы осей X и Y */}
-            <div className="flex items-center justify-between gap-2 text-xs bg-[#f4f8fd] p-2 rounded-lg mb-3">
-              <div className="flex items-center gap-1">
-                <span className="font-semibold text-[#08275b]">Ось X:</span>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 text-xs bg-[#f4f8fd] p-2.5 rounded-lg mb-3">
+              <div className="flex items-center gap-2">
+                <span className="font-semibold text-[#08275b] shrink-0">Ось X:</span>
                 <select
-                  className="field h-6 text-xs py-0 px-1.5 w-auto"
+                  className="field h-8 text-xs py-0 px-2 w-auto bg-white"
                   value={sensVarX}
                   onChange={(e) => setSensVarX(e.target.value as SensitivityVariable)}
                 >
@@ -616,10 +616,10 @@ export default function Scenarios() {
                 </select>
               </div>
 
-              <div className="flex items-center gap-1">
-                <span className="font-semibold text-[#08275b]">Ось Y:</span>
+              <div className="flex items-center gap-2">
+                <span className="font-semibold text-[#08275b] shrink-0">Ось Y:</span>
                 <select
-                  className="field h-6 text-xs py-0 px-1.5 w-auto"
+                  className="field h-8 text-xs py-0 px-2 w-auto bg-white"
                   value={sensVarY}
                   onChange={(e) => setSensVarY(e.target.value as SensitivityVariable)}
                 >

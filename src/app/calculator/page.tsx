@@ -161,7 +161,7 @@ function Section({
   children: React.ReactNode;
 }) {
   return (
-    <section className="card p-4.5">
+    <section className="card p-3.5 sm:p-4.5">
       <div className="mb-3.5 flex items-start justify-between gap-3">
         <div className="flex gap-3">
           <span className="grid h-8.5 w-8.5 shrink-0 place-items-center rounded-full bg-[#dceeff] text-base font-extrabold text-[#08275b]">
@@ -267,20 +267,20 @@ export default function CalculatorPage() {
         <div className="mb-5 flex flex-wrap items-start justify-between gap-4">
           <div>
             <p className="muted m-0 text-xs">Главная › Калькулятор эффективности</p>
-            <h1 className="mb-1 mt-3 text-[38px] font-extrabold tracking-[-.055em] text-[#08275b]">
+            <h1 className="mb-1 mt-2 text-[24px] sm:text-[32px] md:text-[38px] font-extrabold tracking-[-.045em] text-[#08275b] leading-tight">
               Оценка экономической эффективности ИИ
             </h1>
-            <p className="muted m-0 max-w-2xl text-[15px]">
+            <p className="muted m-0 max-w-2xl text-[13px] sm:text-[15px] leading-relaxed">
               Прозрачный расчёт выгод, совокупной стоимости владения (TCO), сроков окупаемости и рисков внедрения.
             </p>
           </div>
 
           {/* Переключатель режимов: Быстрый / Расширенный */}
-          <div className="flex items-center gap-2 bg-[#f0f6fd] p-1.5 rounded-xl border border-[#dce8f8]">
+          <div className="w-full sm:w-auto grid grid-cols-2 sm:flex items-center gap-1.5 bg-[#f0f6fd] p-1.5 rounded-xl border border-[#dce8f8]">
             <button
               type="button"
               onClick={() => upd("mode", "simple")}
-              className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all ${
+              className={`px-3 py-2 sm:py-1.5 rounded-lg text-xs font-bold transition-all text-center justify-center flex items-center min-h-[40px] sm:min-h-[34px] ${
                 inputs.mode === "simple"
                   ? "bg-white text-[#08275b] shadow-xs"
                   : "text-[#5b7ba8] hover:text-[#08275b]"
@@ -291,26 +291,27 @@ export default function CalculatorPage() {
             <button
               type="button"
               onClick={() => upd("mode", "advanced")}
-              className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 ${
+              className={`px-3 py-2 sm:py-1.5 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 min-h-[40px] sm:min-h-[34px] ${
                 inputs.mode === "advanced"
                   ? "bg-[#08275b] text-white shadow-xs"
                   : "text-[#5b7ba8] hover:text-[#08275b]"
               }`}
             >
               <Sparkles size={13} className="text-[#05b89f]" />
-              Расширенный (TCO + мульти-выгоды)
+              <span className="hidden sm:inline">Расширенный (TCO + мульти-выгоды)</span>
+              <span className="sm:hidden">Расширенный</span>
             </button>
           </div>
         </div>
 
         {/* Роль пользователя & персонализация */}
-        <div className="mb-4 card p-3 bg-linear-to-r from-[#f5faff] to-[#f2fdfa] border-[#e0effa] flex flex-wrap items-center justify-between gap-3 text-xs">
-          <div className="flex items-center gap-3 flex-wrap">
-            <div className="flex items-center gap-1.5 font-bold text-[#08275b]">
+        <div className="mb-4 card p-3 sm:p-3.5 bg-linear-to-r from-[#f5faff] to-[#f2fdfa] border-[#e0effa] flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 text-xs">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 w-full sm:w-auto">
+            <div className="flex items-center gap-1.5 font-bold text-[#08275b] shrink-0">
               <Briefcase size={15} className="text-[#0879e8]" />
               <span>Кто вы:</span>
             </div>
-            <div className="flex gap-1.5 flex-wrap">
+            <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-1.5 w-full sm:w-auto">
               {(
                 [
                   "Собственник бизнеса",
@@ -323,9 +324,9 @@ export default function CalculatorPage() {
                   key={role}
                   type="button"
                   onClick={() => upd("userRole", role)}
-                  className={`px-2.5 py-1 rounded-md text-[11px] font-semibold transition-colors ${
+                  className={`px-2.5 py-1.5 rounded-md text-[11px] font-semibold transition-colors min-h-[36px] flex items-center justify-center text-center ${
                     inputs.userRole === role
-                      ? "bg-[#08275b] text-white"
+                      ? "bg-[#08275b] text-white shadow-xs"
                       : "bg-white text-[#385b8c] border border-[#d6e5f7] hover:border-[#a8caee]"
                   }`}
                 >
@@ -334,9 +335,9 @@ export default function CalculatorPage() {
               ))}
             </div>
           </div>
-          <div className="text-[11px] text-[#486b9a] flex items-center gap-2">
-            <span className="font-bold text-[#05b89f]">{roleInfo.badge}:</span>
-            <span>{roleInfo.focus}</span>
+          <div className="text-[11px] text-[#486b9a] flex items-center gap-1.5 pt-1.5 sm:pt-0 border-t sm:border-t-0 border-[#e2ecf8]">
+            <span className="font-bold text-[#05b89f] whitespace-nowrap">{roleInfo.badge}:</span>
+            <span className="line-clamp-2 sm:line-clamp-1">{roleInfo.focus}</span>
           </div>
         </div>
 
@@ -447,7 +448,7 @@ export default function CalculatorPage() {
               title="Бизнес и процесс"
               text="Выберите отрасль или типовой процесс из каталога, либо введите свои параметры."
             >
-              <div className="two-grid grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <label>
                   <span className="field-label flex items-center justify-between mb-1 text-[12px] font-semibold text-[#183a6f]">
                     Отрасль бизнеса
@@ -570,7 +571,7 @@ export default function CalculatorPage() {
                   title="Затраты и внедрение"
                   text="Разовые инвестиции на запуск, регулярная подписка и поправки на качество."
                 >
-                  <div className="two-grid grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <MoneyInput
                       label="Разовые затраты"
                       value={inputs.oneTime}
@@ -619,8 +620,8 @@ export default function CalculatorPage() {
                   </button>
 
                   {showQuickExtra && (
-                    <div className="p-4 pt-2 border-t border-[#e2ecf8] bg-white space-y-4">
-                      <div className="two-grid grid grid-cols-2 gap-3">
+                    <div className="p-3.5 sm:p-4 pt-2 border-t border-[#e2ecf8] bg-white space-y-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <MoneyInput
                           label="Дополнительно в месяц"
                           value={inputs.additional}
@@ -658,7 +659,7 @@ export default function CalculatorPage() {
                           </select>
                         </label>
 
-                        <label className="rounded-lg border border-[#d8e6f6] px-3 py-2 text-[11px] flex items-center gap-2 cursor-pointer h-[43px] mt-[22px]">
+                        <label className="rounded-lg border border-[#d8e6f6] px-3 py-2 text-[11px] flex items-center gap-2 cursor-pointer min-h-[44px] sm:mt-[22px]">
                           <input
                             type="checkbox"
                             checked={inputs.hasOwner ?? inputs.owner}
@@ -678,9 +679,9 @@ export default function CalculatorPage() {
                       </div>
 
                       {/* Горизонт расчёта и Ramp-up */}
-                      <div className="p-3 rounded-xl bg-[#f2f7fd] border border-[#dbe8f8] flex flex-wrap items-center justify-between gap-3">
-                        <div className="flex items-center gap-2">
-                          <span className="text-xs font-semibold text-[#08275b]">
+                      <div className="p-3 rounded-xl bg-[#f2f7fd] border border-[#dbe8f8] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="text-xs font-semibold text-[#08275b] shrink-0">
                             Горизонт расчёта:
                           </span>
                           <div className="flex gap-1">
@@ -689,7 +690,7 @@ export default function CalculatorPage() {
                                 key={yr}
                                 type="button"
                                 onClick={() => upd("horizonYears", yr)}
-                                className={`px-2.5 py-1 text-xs font-bold rounded-md transition-colors ${
+                                className={`px-2.5 py-1.5 min-h-[36px] text-xs font-bold rounded-md transition-colors ${
                                   (inputs.horizonYears || 1) === yr
                                     ? "bg-[#08275b] text-white"
                                     : "bg-white text-[#3c5e8f] border border-[#d0e1f4]"
@@ -701,13 +702,13 @@ export default function CalculatorPage() {
                           </div>
                         </div>
 
-                        <div className="flex items-center gap-2">
-                          <span className="text-xs font-semibold text-[#08275b] flex items-center">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className="text-xs font-semibold text-[#08275b] flex items-center shrink-0">
                             Выход на мощность:
                             <TooltipInfo metric="rampUp" />
                           </span>
                           <select
-                            className="field h-8 text-xs py-1 px-2 w-auto text-[#08275b]"
+                            className="field h-9 text-xs py-1 px-2 w-auto min-w-[160px] text-[#08275b]"
                             value={inputs.rampUpMonths || 0}
                             onChange={(e) =>
                               upd("rampUpMonths", Number(e.target.value) as RampUpMonths)
@@ -801,7 +802,7 @@ export default function CalculatorPage() {
                         )}
                       </div>
                       {inputs.contractorSavings.enabled && (
-                        <div className="two-grid grid grid-cols-2 gap-3 mt-2">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-2">
                           <MoneyInput
                             label="Текущие расходы на подрядчиков"
                             value={inputs.contractorSavings.currentMonthlyExpense}
@@ -857,7 +858,7 @@ export default function CalculatorPage() {
                         )}
                       </div>
                       {inputs.errorSavings.enabled && (
-                        <div className="three-grid grid grid-cols-3 gap-3 mt-2">
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-2">
                           <NumField
                             label="Ошибок в месяц"
                             value={inputs.errorSavings.errorsPerMonth}
@@ -924,7 +925,7 @@ export default function CalculatorPage() {
                         )}
                       </div>
                       {inputs.revenueGain.enabled && (
-                        <div className="three-grid grid grid-cols-3 gap-3 mt-2">
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-2">
                           <MoneyInput
                             label="Текущая выручка процесса"
                             value={inputs.revenueGain.currentMonthlyRevenue}
@@ -985,7 +986,7 @@ export default function CalculatorPage() {
                           Итого разовых: {formatMoney(result.detailed.costs.oneTimeTotal)}
                         </span>
                       </div>
-                      <div className="three-grid grid grid-cols-3 gap-2.5">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5">
                         <MoneyInput
                           label="Разработка / кастомизация"
                           value={inputs.oneTimeTCO.development}
@@ -1047,7 +1048,7 @@ export default function CalculatorPage() {
                           В месяц: {formatMoney(result.detailed.costs.recurringMonthlyTotal)}
                         </span>
                       </div>
-                      <div className="three-grid grid grid-cols-3 gap-2.5">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5">
                         <MoneyInput
                           label="Лицензии на пользователей"
                           value={inputs.recurringTCO.licenses}
@@ -1110,9 +1111,9 @@ export default function CalculatorPage() {
                   </div>
 
                   {/* Горизонт расчёта и Ramp-up */}
-                  <div className="mt-3 p-3 rounded-xl bg-[#f2f7fd] border border-[#dbe8f8] flex flex-wrap items-center justify-between gap-3">
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs font-semibold text-[#08275b]">
+                  <div className="mt-3 p-3 rounded-xl bg-[#f2f7fd] border border-[#dbe8f8] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="text-xs font-semibold text-[#08275b] shrink-0">
                         Горизонт расчёта:
                       </span>
                       <div className="flex gap-1">
@@ -1121,7 +1122,7 @@ export default function CalculatorPage() {
                             key={yr}
                             type="button"
                             onClick={() => upd("horizonYears", yr)}
-                            className={`px-2.5 py-1 text-xs font-bold rounded-md transition-colors ${
+                            className={`px-2.5 py-1.5 min-h-[36px] text-xs font-bold rounded-md transition-colors ${
                               (inputs.horizonYears || 1) === yr
                                 ? "bg-[#08275b] text-white"
                                 : "bg-white text-[#3c5e8f] border border-[#d0e1f4]"
@@ -1133,13 +1134,13 @@ export default function CalculatorPage() {
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs font-semibold text-[#08275b] flex items-center">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="text-xs font-semibold text-[#08275b] flex items-center shrink-0">
                         Выход на мощность:
                         <TooltipInfo metric="rampUp" />
                       </span>
                       <select
-                        className="field h-8 text-xs py-1 px-2 w-auto text-[#08275b]"
+                        className="field h-9 text-xs py-1 px-2 w-auto min-w-[160px] text-[#08275b]"
                         value={inputs.rampUpMonths || 0}
                         onChange={(e) =>
                           upd("rampUpMonths", Number(e.target.value) as RampUpMonths)
@@ -1160,7 +1161,7 @@ export default function CalculatorPage() {
                   title="Качество и риски"
                   text="Поправки на качество черновиков, долю реализации высвобожденных часов и безопасность данных."
                 >
-                  <div className="two-grid grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <PercentInput
                       label="Коэффициент качества q"
                       value={inputs.quality}
@@ -1230,7 +1231,7 @@ export default function CalculatorPage() {
                       tooltip="Бюджет на 30-дневный пилот. Не прибавляется к затратам, но влияет на индекс готовности."
                     />
 
-                    <label className="rounded-lg border border-[#d8e6f6] px-3 py-2 text-[11px] flex items-center gap-2 cursor-pointer h-[43px] mt-[22px]">
+                    <label className="rounded-lg border border-[#d8e6f6] px-3 py-2 text-[11px] flex items-center gap-2 cursor-pointer min-h-[44px] sm:mt-[22px]">
                       <input
                         type="checkbox"
                         checked={inputs.hasOwner ?? inputs.owner}
@@ -1284,16 +1285,16 @@ export default function CalculatorPage() {
               </p>
             )}
 
-            <div className="flex flex-wrap gap-3 pt-1">
+            <div className="flex flex-col sm:flex-row gap-2.5 sm:gap-3 pt-1">
               <button
                 type="button"
                 onClick={() => setInputs(initialInputs)}
-                className="btn btn-outline flex-1"
+                className="btn btn-outline w-full sm:flex-1 min-h-[44px]"
               >
                 <RotateCcw size={15} />
                 Сбросить вводные
               </button>
-              <button className="btn btn-primary flex-[1.7]">
+              <button className="btn btn-primary w-full sm:flex-[1.7] min-h-[46px] text-sm font-bold">
                 <Calculator size={16} />
                 Рассчитать результат
               </button>
@@ -1301,7 +1302,7 @@ export default function CalculatorPage() {
           </form>
 
           {/* Правая колонка: Результаты расчёта, метрики и действия */}
-          <aside id="calc-results" className="result-side sticky top-20 h-fit space-y-2.5">
+          <aside id="calc-results" className="result-side sticky top-20 scroll-mt-20 h-fit space-y-2.5">
             {/* 1. Блок Рекомендации НАВЕРХУ */}
             <div
               className="card p-3.5 transition-all"
@@ -1719,7 +1720,7 @@ export default function CalculatorPage() {
       </main>
 
       {/* Мобильная плашка с экспресс-итогами расчёта */}
-      <div className="lg:hidden fixed bottom-0 inset-x-0 bg-white/95 backdrop-blur-md border-t border-[#d8e6f4] px-4 py-2.5 shadow-[0_-4px_20px_rgba(8,39,91,0.09)] z-30 flex items-center justify-between gap-3">
+      <div className="lg:hidden fixed bottom-0 inset-x-0 bg-white/95 backdrop-blur-md border-t border-[#d8e6f4] px-4 pt-2.5 pb-[max(10px,env(safe-area-inset-bottom))] shadow-[0_-4px_20px_rgba(8,39,91,0.09)] z-30 flex items-center justify-between gap-3">
         <div className="min-w-0">
           <span className="text-[10px] text-[#637ba5] block leading-tight">Эффект в год</span>
           <b className={`text-sm font-extrabold truncate block ${result.effect >= 0 ? "text-[#009b86]" : "text-rose-600"}`}>
