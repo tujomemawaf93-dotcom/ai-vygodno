@@ -318,7 +318,7 @@ export const isAbnormal = (i: Inputs, r: Result) =>
 
 type Store = {
   inputs: Inputs;
-  setInputs: (v: Inputs) => void;
+  setInputs: (v: Inputs | ((prev: Inputs) => Inputs)) => void;
   calculatedInputs: Inputs;
   result: Result;
   setCalculated: (v: Inputs) => void;
@@ -390,55 +390,82 @@ export function CalculationProvider({ children }: { children: React.ReactNode })
     }
   }, []);
 
-  const setInputs = (next: Inputs) => {
-    // Keep legacy staff/hours/rate/oneTime/monthly in sync with advanced structures
-    if (next.mode === "simple") {
-      next.timeSavings = {
-        enabled: true,
-        staff: next.staff,
-        hoursPerEmployeeMonth: next.hours,
-        hourlyRate: next.rate,
-      };
-      next.oneTimeTCO = {
-        ...next.oneTimeTCO,
-        development: next.oneTime,
-        setup: 0,
-        integration: 0,
-        training: 0,
-        consulting: 0,
-        dataMigration: 0,
-        custom: 0,
-      };
-      next.recurringTCO = {
-        ...next.recurringTCO,
-        licenses: next.monthly,
-        apiTokens: next.additional,
-        infrastructure: 0,
-        support: 0,
-        qualityControl: 0,
-        additionalServices: 0,
-        custom: 0,
-      };
-      next.dataCategory = (next.data || "Внутренние") as Inputs["dataCategory"];
-      next.hasOwner = next.owner;
-      next.readinessScore = next.readiness;
-    } else {
-      // In advanced mode, derive legacy numbers for backward compatibility
-      if (next.timeSavings) {
-        next.staff = next.timeSavings.staff;
-        next.hours = next.timeSavings.hoursPerEmployeeMonth;
-        next.rate = next.timeSavings.hourlyRate;
+  const setInputs = (nextOrUpdater: Inputs | ((prev: Inputs) => Inputs)) => {
+    setInputsState((prevState) => {
+      const rawNext = typeof nextOrUpdater === "function" ? nextOrUpdater(prevState) : nextOrUpdater;
+      const next: Inputs = { ...rawNext };
+
+      if (next.mode === "simple") {
+        next.timeSavings = {
+          ...(next.timeSavings || { enabled: true, staff: 5, hoursPerEmployeeMonth: 10, hourlyRate: 2000 }),
+          enabled: true,
+          staff: next.staff,
+          hoursPerEmployeeMonth: next.hours,
+          hourlyRate: next.rate,
+        };
+        next.oneTimeTCO = {
+          ...next.oneTimeTCO,
+          development: next.oneTime,
+          setup: 0,
+          integration: 0,
+          training: 0,
+          consulting: 0,
+          dataMigration: 0,
+          custom: 0,
+        };
+        next.recurringTCO = {
+          ...next.recurringTCO,
+          licenses: next.monthly,
+          apiTokens: next.additional,
+          infrastructure: 0,
+          support: 0,
+          qualityControl: 0,
+          additionalServices: 0,
+          custom: 0,
+        };
+        next.dataCategory = (next.data || "Внутренние") as Inputs["dataCategory"];
+        next.hasOwner = next.owner;
+        next.readinessScore = next.readiness;
+      } else {
+        // In advanced mode: sync both ways
+        if (next.staff !== prevState.staff) {
+          next.timeSavings = {
+            ...(next.timeSavings || { enabled: true, staff: next.staff, hoursPerEmployeeMonth: next.hours, hourlyRate: next.rate }),
+            staff: next.staff,
+          };
+        } else if (next.timeSavings) {
+          next.staff = next.timeSavings.staff;
+        }
+
+        if (next.hours !== prevState.hours) {
+          next.timeSavings = {
+            ...(next.timeSavings || { enabled: true, staff: next.staff, hoursPerEmployeeMonth: next.hours, hourlyRate: next.rate }),
+            hoursPerEmployeeMonth: next.hours,
+          };
+        } else if (next.timeSavings) {
+          next.hours = next.timeSavings.hoursPerEmployeeMonth;
+        }
+
+        if (next.rate !== prevState.rate) {
+          next.timeSavings = {
+            ...(next.timeSavings || { enabled: true, staff: next.staff, hoursPerEmployeeMonth: next.hours, hourlyRate: next.rate }),
+            hourlyRate: next.rate,
+          };
+        } else if (next.timeSavings) {
+          next.rate = next.timeSavings.hourlyRate;
+        }
+
+        const oneTimeSum = Object.values(next.oneTimeTCO || {}).reduce((a, b) => a + b, 0);
+        next.oneTime = oneTimeSum;
+        const recurringSum = Object.values(next.recurringTCO || {}).reduce((a, b) => a + b, 0);
+        next.monthly = recurringSum;
+        next.additional = 0;
+        next.data = next.dataCategory;
+        next.owner = next.hasOwner;
+        next.readiness = next.readinessScore;
       }
-      const oneTimeSum = Object.values(next.oneTimeTCO || {}).reduce((a, b) => a + b, 0);
-      next.oneTime = oneTimeSum;
-      const recurringSum = Object.values(next.recurringTCO || {}).reduce((a, b) => a + b, 0);
-      next.monthly = recurringSum;
-      next.additional = 0;
-      next.data = next.dataCategory;
-      next.owner = next.hasOwner;
-      next.readiness = next.readinessScore;
-    }
-    setInputsState(next);
+      return next;
+    });
   };
 
   const setCalculated = (v: Inputs) => {

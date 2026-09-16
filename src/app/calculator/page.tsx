@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { useState, useId } from "react";
+import { useState, useEffect, useId } from "react";
 import {
   ArrowRight,
   Calculator,
@@ -77,6 +77,31 @@ function NumField({
   step?: string;
   tooltip?: string;
 }) {
+  const [localStr, setLocalStr] = useState<string>(() =>
+    Number.isFinite(value) ? String(value) : ""
+  );
+  const [isFocused, setIsFocused] = useState(false);
+
+  useEffect(() => {
+    if (!isFocused) {
+      setLocalStr(Number.isFinite(value) ? String(value) : "");
+    }
+  }, [value, isFocused]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const raw = e.target.value;
+    setLocalStr(raw);
+    if (raw === "" || raw === "-") {
+      onChange(min || 0);
+      return;
+    }
+    const n = Number(raw);
+    if (Number.isFinite(n)) {
+      const clamped = max !== undefined ? Math.min(max, n) : n;
+      onChange(clamped);
+    }
+  };
+
   return (
     <label className="block">
       <span className="field-label flex items-center justify-between mb-1 text-[12px] font-semibold text-[#183a6f]">
@@ -94,11 +119,25 @@ function NumField({
           min={min}
           max={max}
           step={step}
-          value={Number.isFinite(value) ? value : ""}
-          onChange={(e) => {
-            const n = Number(e.target.value);
-            if (Number.isFinite(n)) onChange(n);
+          value={isFocused ? localStr : (Number.isFinite(value) ? value : "")}
+          onFocus={() => {
+            setIsFocused(true);
+            setLocalStr(Number.isFinite(value) ? String(value) : "");
           }}
+          onBlur={() => {
+            setIsFocused(false);
+            if (localStr === "" || isNaN(Number(localStr))) {
+              onChange(min || 0);
+              setLocalStr(String(min || 0));
+            } else {
+              let n = Number(localStr);
+              if (min !== undefined && n < min) n = min;
+              if (max !== undefined && n > max) n = max;
+              onChange(n);
+              setLocalStr(String(n));
+            }
+          }}
+          onChange={handleChange}
         />
         <span className="pointer-events-none absolute right-3 top-[12px] text-[11px] text-[#7890b3]">
           {suffix}
@@ -173,7 +212,7 @@ export default function CalculatorPage() {
   } = useCalculation();
 
   const upd = <K extends keyof Inputs>(k: K, v: Inputs[K]) => {
-    setInputs({ ...inputs, [k]: v });
+    setInputs((prev) => ({ ...prev, [k]: v }));
   };
 
   const roleInfo = ROLE_ADVICE[inputs.userRole || "Руководитель отдела"];
@@ -496,16 +535,11 @@ export default function CalculatorPage() {
                   title="Экономия рабочего времени"
                   text="Сколько рутинного времени высвободит автоматизация у команды."
                 >
-                  <div className="three-grid grid grid-cols-3 gap-3">
+                  <div className="three-grid grid grid-cols-1 md:grid-cols-3 gap-3">
                     <NumField
                       label="Сотрудников"
                       value={inputs.staff}
-                      onChange={(v) => {
-                        upd("staff", v);
-                        if (inputs.timeSavings) {
-                          upd("timeSavings", { ...inputs.timeSavings, staff: v });
-                        }
-                      }}
+                      onChange={(v) => upd("staff", v)}
                       suffix="чел."
                       min={1}
                       step="1"
@@ -514,27 +548,15 @@ export default function CalculatorPage() {
                     <NumField
                       label="Экономия на чел."
                       value={inputs.hours}
-                      onChange={(v) => {
-                        upd("hours", v);
-                        if (inputs.timeSavings) {
-                          upd("timeSavings", {
-                            ...inputs.timeSavings,
-                            hoursPerEmployeeMonth: v,
-                          });
-                        }
-                      }}
+                      onChange={(v) => upd("hours", v)}
                       suffix="ч/мес."
+                      min={0}
                       tooltip="Реалистичные высвобождаемые часы на рутине (не весь день!)."
                     />
                     <MoneyInput
                       label="Стоимость часа"
                       value={inputs.rate}
-                      onChange={(v) => {
-                        upd("rate", v);
-                        if (inputs.timeSavings) {
-                          upd("timeSavings", { ...inputs.timeSavings, hourlyRate: v });
-                        }
-                      }}
+                      onChange={(v) => upd("rate", v)}
                       suffix="₽/час"
                       min={100}
                       tooltip="Полная ставка сотрудника с учётом налогов и накладных."
@@ -623,8 +645,7 @@ export default function CalculatorPage() {
                             value={inputs.dataCategory || inputs.data}
                             onChange={(e) => {
                               const val = e.target.value as DataCategory;
-                              upd("dataCategory", val);
-                              upd("data", val);
+                              setInputs((prev) => ({ ...prev, dataCategory: val, data: val }));
                             }}
                           >
                             <option value="Публичные">Публичные данные</option>
@@ -642,8 +663,8 @@ export default function CalculatorPage() {
                             type="checkbox"
                             checked={inputs.hasOwner ?? inputs.owner}
                             onChange={(e) => {
-                              upd("hasOwner", e.target.checked);
-                              upd("owner", e.target.checked);
+                              const val = e.target.checked;
+                              setInputs((prev) => ({ ...prev, hasOwner: val, owner: val }));
                             }}
                             className="accent-[#05b89f]"
                           />
@@ -724,43 +745,26 @@ export default function CalculatorPage() {
                       </span>
                     </div>
 
-                    <div className="three-grid grid grid-cols-3 gap-3">
+                    <div className="three-grid grid grid-cols-1 md:grid-cols-3 gap-3">
                       <NumField
                         label="Сотрудников"
                         value={inputs.staff}
-                        onChange={(v) => {
-                          upd("staff", v);
-                          if (inputs.timeSavings) {
-                            upd("timeSavings", { ...inputs.timeSavings, staff: v });
-                          }
-                        }}
+                        onChange={(v) => upd("staff", v)}
                         suffix="чел."
                         min={1}
                       />
                       <NumField
                         label="Экономия / сотрудника"
                         value={inputs.hours}
-                        onChange={(v) => {
-                          upd("hours", v);
-                          if (inputs.timeSavings) {
-                            upd("timeSavings", {
-                              ...inputs.timeSavings,
-                              hoursPerEmployeeMonth: v,
-                            });
-                          }
-                        }}
+                        onChange={(v) => upd("hours", v)}
                         suffix="ч/мес."
+                        min={0}
                         tooltip="Реалистичные высвобождаемые часы на рутине (не весь день!)."
                       />
                       <MoneyInput
                         label="Стоимость часа"
                         value={inputs.rate}
-                        onChange={(v) => {
-                          upd("rate", v);
-                          if (inputs.timeSavings) {
-                            upd("timeSavings", { ...inputs.timeSavings, hourlyRate: v });
-                          }
-                        }}
+                        onChange={(v) => upd("rate", v)}
                         suffix="₽/час"
                         min={100}
                         tooltip="Полная ставка сотрудника с учётом налогов и накладных."
@@ -1184,8 +1188,7 @@ export default function CalculatorPage() {
                         value={inputs.dataCategory || inputs.data}
                         onChange={(e) => {
                           const val = e.target.value as DataCategory;
-                          upd("dataCategory", val);
-                          upd("data", val);
+                          setInputs((prev) => ({ ...prev, dataCategory: val, data: val }));
                         }}
                       >
                         <option value="Публичные">Публичные данные</option>
@@ -1208,8 +1211,7 @@ export default function CalculatorPage() {
                         value={inputs.readinessScore || inputs.readiness}
                         onChange={(e) => {
                           const n = Number(e.target.value);
-                          upd("readinessScore", n);
-                          upd("readiness", n);
+                          setInputs((prev) => ({ ...prev, readinessScore: n, readiness: n }));
                         }}
                       >
                         <option value="1">1 — не готовы (нет регламентов)</option>
@@ -1233,8 +1235,8 @@ export default function CalculatorPage() {
                         type="checkbox"
                         checked={inputs.hasOwner ?? inputs.owner}
                         onChange={(e) => {
-                          upd("hasOwner", e.target.checked);
-                          upd("owner", e.target.checked);
+                          const val = e.target.checked;
+                          setInputs((prev) => ({ ...prev, hasOwner: val, owner: val }));
                         }}
                         className="accent-[#05b89f]"
                       />
