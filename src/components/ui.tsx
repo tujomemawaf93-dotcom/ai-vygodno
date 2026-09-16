@@ -4,6 +4,7 @@ import Image from "next/image";
 import {
   ArrowRight,
   BarChart3,
+  BarChart2,
   SlidersHorizontal,
   Check,
   Clock3,
@@ -23,6 +24,10 @@ import {
   ExternalLink,
   History,
   Scale,
+  Calculator,
+  Sparkles,
+  Layers,
+  HelpCircle,
 } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
@@ -116,13 +121,13 @@ export const METRIC_TOOLTIPS: Record<
   quality: {
     title: "Коэффициент качества (q)",
     what: "Доля результатов ИИ, пригодных без критических переделок человеком.",
-    how: "Отношение принятых черновиков к общему числу задач (обычно 0.85–0.95).",
+    how: "Отношение принятых черновиков к общему числу задач (например, 0,85–0,95).",
     interpretation: "Определяет нагрузку на проверку: чем ниже q, тем больше времени уходит на контроль.",
   },
   realization: {
     title: "Коэффициент реализации (k)",
     what: "Доля высвобожденного времени, направленная на реальную пользу бизнесу.",
-    how: "Экспертная поправка модели (обычно 0.70–0.85).",
+    how: "Экспертная поправка модели (например, 0,70–0,85 в сценарной модели).",
     interpretation: "Страхует от завышенных ожиданий: время приносит деньги только при конвертации в работу или снижении затрат.",
   },
   rampUp: {
@@ -447,7 +452,7 @@ export function ProjectsModal({
 
         {/* Сводные карточки (максимум 3) */}
         {totalProjects > 0 && (
-          <div className="grid grid-cols-3 gap-3 p-4 bg-[#f2f7fd] border-b border-[#e2edf9] text-xs">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 p-3.5 bg-[#f2f7fd] border-b border-[#e2edf9] text-xs">
             <div className="p-2.5 rounded-xl bg-white border border-[#dbe8f8]">
               <span className="text-[#6582ac] block text-[11px]">Всего расчётов</span>
               <b className="text-base text-[#08275b]">{totalProjects} шт.</b>
@@ -473,7 +478,7 @@ export function ProjectsModal({
               onClick={() => {
                 saveCurrentProject();
               }}
-              className="btn btn-outline text-xs py-1.5 px-3 flex items-center gap-1.5"
+              className="btn btn-outline text-xs py-1.5 px-3 flex items-center gap-1.5 min-h-[38px]"
             >
               <Plus size={14} /> Сохранить текущий расчёт
             </button>
@@ -498,129 +503,237 @@ export function ProjectsModal({
               <Link
                 href="/calculator"
                 onClick={onClose}
-                className="btn btn-primary text-xs py-2 px-4 mt-4 inline-flex items-center gap-1.5 no-underline"
+                className="btn btn-primary text-xs py-2 px-4 mt-4 inline-flex items-center gap-1.5 no-underline min-h-[44px]"
               >
                 Создать первый расчёт <ArrowRight size={14} />
               </Link>
             </div>
           ) : (
-            <div className="table-wrap border border-[#e0edf8] rounded-xl overflow-hidden bg-white">
-              <table className="w-full text-xs min-w-[620px] border-collapse">
-                <thead>
-                  <tr className="bg-[#f4f8fd] text-[#08275b] border-b border-[#e2edf9]">
-                    <th className="p-2.5 text-left font-bold">Название и процесс</th>
-                    <th className="p-2.5 text-right font-bold">Эффект E</th>
-                    <th className="p-2.5 text-center font-bold">ROI</th>
-                    <th className="p-2.5 text-center font-bold">Окупаемость</th>
-                    <th className="p-2.5 text-center font-bold">Статус</th>
-                    <th className="p-2.5 text-right font-bold">Действия</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-[#edf4fc]">
-                  {savedProjects.map((p) => {
-                    const isActive = p.id === activeProjectId;
-                    const formattedDate = p.updatedAt
-                      ? new Date(p.updatedAt).toLocaleDateString("ru-RU", {
-                          day: "numeric",
-                          month: "short",
-                        })
-                      : "";
+            <>
+              {/* Мобильный список карточек (390–768px) */}
+              <div className="block md:hidden space-y-3">
+                {savedProjects.map((p) => {
+                  const isActive = p.id === activeProjectId;
+                  const formattedDate = p.updatedAt
+                    ? new Date(p.updatedAt).toLocaleDateString("ru-RU", {
+                        day: "numeric",
+                        month: "short",
+                      })
+                    : "";
 
-                    return (
-                      <tr
-                        key={p.id}
-                        className={`hover:bg-[#f8fbff] transition-colors ${
-                          isActive ? "bg-[#f0fbf8]" : ""
-                        }`}
-                      >
-                        <td className="p-2.5">
-                          <div className="flex items-center gap-2">
-                            <span className="font-bold text-[#08275b]">
+                  return (
+                    <div
+                      key={p.id}
+                      className={`p-3.5 rounded-xl border transition-all ${
+                        isActive
+                          ? "bg-[#f0fbf8] border-[#8ee4d5] shadow-xs"
+                          : "bg-white border-[#e0edf8]"
+                      }`}
+                    >
+                      <div className="flex items-start justify-between gap-2 mb-2">
+                        <div>
+                          <div className="flex items-center gap-1.5 flex-wrap">
+                            <h4 className="font-bold text-sm text-[#08275b] m-0">
                               {p.title || p.process}
-                            </span>
+                            </h4>
                             {isActive && (
-                              <span className="text-[10px] font-bold text-[#009b86] bg-[#d7f7f0] px-1.5 py-0.2 rounded-full">
+                              <span className="text-[10px] font-bold text-[#009b86] bg-[#d7f7f0] px-2 py-0.5 rounded-full">
                                 Активен
                               </span>
                             )}
                           </div>
-                          <div className="text-[11px] text-[#607eab] mt-0.5 flex gap-2">
-                            <span>{p.industry}</span>
-                            {formattedDate && <span>• {formattedDate}</span>}
-                          </div>
-                        </td>
+                          <span className="text-xs text-[#637ba5]">
+                            {p.industry} {formattedDate && `• ${formattedDate}`}
+                          </span>
+                        </div>
+                        <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[#edf4fd] text-[#1c4883] shrink-0">
+                          {p.status || "Расчёт"}
+                        </span>
+                      </div>
 
-                        <td className="p-2.5 text-right font-bold">
-                          <span
-                            className={
-                              p.effect >= 0 ? "text-[#05b89f]" : "text-rose-600"
-                            }
-                          >
+                      <div className="grid grid-cols-3 gap-2 p-2 rounded-lg bg-[#f7fafe] border border-[#e5effa] text-xs mb-3 text-center">
+                        <div>
+                          <span className="text-[10px] text-[#637ba5] block">Эффект E</span>
+                          <b className={`font-bold ${p.effect >= 0 ? "text-[#05b89f]" : "text-rose-600"}`}>
                             {formatMoney(p.effect)}
-                          </span>
-                        </td>
+                          </b>
+                        </div>
+                        <div>
+                          <span className="text-[10px] text-[#637ba5] block">ROI</span>
+                          <b className="font-bold text-[#08275b]">{formatROI(p.roi)}</b>
+                        </div>
+                        <div>
+                          <span className="text-[10px] text-[#637ba5] block">Окупаемость</span>
+                          <b className="font-medium text-[#496b99]">{formatPayback(p.payback)}</b>
+                        </div>
+                      </div>
 
-                        <td className="p-2.5 text-center font-semibold text-[#08275b]">
-                          {formatROI(p.roi)}
-                        </td>
+                      <div className="flex items-center justify-between gap-2 pt-1 border-t border-[#edf4fc]">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setActiveProjectId(p.id);
+                            setInputs(p.inputs);
+                            setCalculated(p.inputs);
+                            onClose();
+                          }}
+                          className={`btn text-xs py-2 px-3 flex-1 justify-center min-h-[44px] ${
+                            isActive
+                              ? "btn-primary"
+                              : "btn-outline border-[#a8caee] text-[#0879e8]"
+                          }`}
+                        >
+                          {isActive ? "Выбран" : "Открыть"}
+                        </button>
+                        <Link
+                          href="/compare"
+                          onClick={onClose}
+                          title="Сравнить"
+                          className="btn btn-outline text-xs p-2 min-h-[44px] min-w-[44px] flex items-center justify-center text-slate-500 hover:text-[#0879e8]"
+                        >
+                          <Scale size={16} />
+                        </Link>
+                        <button
+                          type="button"
+                          onClick={() => duplicateSavedProject(p.id)}
+                          title="Дублировать"
+                          className="btn btn-outline text-xs p-2 min-h-[44px] min-w-[44px] flex items-center justify-center text-slate-500 hover:text-[#05b89f]"
+                        >
+                          <Copy size={16} />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => deleteSavedProject(p.id)}
+                          title="Удалить"
+                          className="btn btn-outline text-xs p-2 min-h-[44px] min-w-[44px] flex items-center justify-center text-slate-400 hover:text-rose-600"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
 
-                        <td className="p-2.5 text-center font-medium text-[#496b99]">
-                          {formatPayback(p.payback)}
-                        </td>
+              {/* Десктопная / планшетная таблица */}
+              <div className="hidden md:block table-wrap border border-[#e0edf8] rounded-xl overflow-hidden bg-white">
+                <table className="w-full text-xs min-w-[620px] border-collapse">
+                  <thead>
+                    <tr className="bg-[#f4f8fd] text-[#08275b] border-b border-[#e2edf9]">
+                      <th className="p-2.5 text-left font-bold">Название и процесс</th>
+                      <th className="p-2.5 text-right font-bold">Эффект E</th>
+                      <th className="p-2.5 text-center font-bold">ROI</th>
+                      <th className="p-2.5 text-center font-bold">Окупаемость</th>
+                      <th className="p-2.5 text-center font-bold">Статус</th>
+                      <th className="p-2.5 text-right font-bold">Действия</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-[#edf4fc]">
+                    {savedProjects.map((p) => {
+                      const isActive = p.id === activeProjectId;
+                      const formattedDate = p.updatedAt
+                        ? new Date(p.updatedAt).toLocaleDateString("ru-RU", {
+                            day: "numeric",
+                            month: "short",
+                          })
+                        : "";
 
-                        <td className="p-2.5 text-center">
-                          <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[#edf4fd] text-[#1c4883]">
-                            {p.status || "Расчёт"}
-                          </span>
-                        </td>
+                      return (
+                        <tr
+                          key={p.id}
+                          className={`hover:bg-[#f8fbff] transition-colors ${
+                            isActive ? "bg-[#f0fbf8]" : ""
+                          }`}
+                        >
+                          <td className="p-2.5">
+                            <div className="flex items-center gap-2">
+                              <span className="font-bold text-[#08275b]">
+                                {p.title || p.process}
+                              </span>
+                              {isActive && (
+                                <span className="text-[10px] font-bold text-[#009b86] bg-[#d7f7f0] px-1.5 py-0.2 rounded-full">
+                                  Активен
+                                </span>
+                              )}
+                            </div>
+                            <div className="text-[11px] text-[#607eab] mt-0.5 flex gap-2">
+                              <span>{p.industry}</span>
+                              {formattedDate && <span>• {formattedDate}</span>}
+                            </div>
+                          </td>
 
-                        <td className="p-2.5 text-right">
-                          <div className="flex items-center justify-end gap-1">
-                            <button
-                              onClick={() => {
-                                setActiveProjectId(p.id);
-                                setInputs(p.inputs);
-                                setCalculated(p.inputs);
-                                onClose();
-                              }}
-                              className={`px-2.5 py-1 text-[11px] font-semibold rounded-md ${
-                                isActive
-                                  ? "bg-[#05b89f] text-white"
-                                  : "bg-[#e8f3ff] text-[#0879e8] hover:bg-[#d5e9ff]"
-                              }`}
+                          <td className="p-2.5 text-right font-bold">
+                            <span
+                              className={
+                                p.effect >= 0 ? "text-[#05b89f]" : "text-rose-600"
+                              }
                             >
-                              Открыть
-                            </button>
-                            <Link
-                              href="/compare"
-                              onClick={onClose}
-                              title="Сравнить варианты"
-                              className="p-1 text-slate-400 hover:text-[#0879e8] rounded"
-                            >
-                              <Scale size={14} />
-                            </Link>
-                            <button
-                              onClick={() => duplicateSavedProject(p.id)}
-                              title="Дублировать"
-                              className="p-1 text-slate-400 hover:text-slate-700 rounded"
-                            >
-                              <Copy size={14} />
-                            </button>
-                            <button
-                              onClick={() => deleteSavedProject(p.id)}
-                              title="Удалить"
-                              className="p-1 text-slate-400 hover:text-rose-600 rounded"
-                            >
-                              <Trash2 size={14} />
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
+                              {formatMoney(p.effect)}
+                            </span>
+                          </td>
+
+                          <td className="p-2.5 text-center font-semibold text-[#08275b]">
+                            {formatROI(p.roi)}
+                          </td>
+
+                          <td className="p-2.5 text-center font-medium text-[#496b99]">
+                            {formatPayback(p.payback)}
+                          </td>
+
+                          <td className="p-2.5 text-center">
+                            <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[#edf4fd] text-[#1c4883]">
+                              {p.status || "Расчёт"}
+                            </span>
+                          </td>
+
+                          <td className="p-2.5 text-right">
+                            <div className="flex items-center justify-end gap-1">
+                              <button
+                                onClick={() => {
+                                  setActiveProjectId(p.id);
+                                  setInputs(p.inputs);
+                                  setCalculated(p.inputs);
+                                  onClose();
+                                }}
+                                className={`px-2.5 py-1 text-[11px] font-semibold rounded-md ${
+                                  isActive
+                                    ? "bg-[#05b89f] text-white"
+                                    : "bg-[#e8f3ff] text-[#0879e8] hover:bg-[#d5e9ff]"
+                                }`}
+                              >
+                                Открыть
+                              </button>
+                              <Link
+                                href="/compare"
+                                onClick={onClose}
+                                title="Сравнить варианты"
+                                className="p-1 text-slate-400 hover:text-[#0879e8] rounded"
+                              >
+                                <Scale size={14} />
+                              </Link>
+                              <button
+                                onClick={() => duplicateSavedProject(p.id)}
+                                title="Дублировать"
+                                className="p-1 text-slate-400 hover:text-slate-700 rounded"
+                              >
+                                <Copy size={14} />
+                              </button>
+                              <button
+                                onClick={() => deleteSavedProject(p.id)}
+                                title="Удалить"
+                                className="p-1 text-slate-400 hover:text-rose-600 rounded"
+                              >
+                                <Trash2 size={14} />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </>
           )}
         </div>
 
@@ -841,106 +954,179 @@ export function Header() {
             )}
 
             <button
-              className="mobile-menu hidden text-[#082460] p-1.5"
+              className="md:hidden flex items-center justify-center w-11 h-11 rounded-lg text-[#082460] hover:bg-[#f0f6fd] transition-colors -mr-2"
               onClick={() => setOpen(!open)}
-              aria-label="Открыть меню"
+              aria-label={open ? "Закрыть меню" : "Открыть меню"}
             >
-              <Menu size={20} />
+              {open ? <X size={22} /> : <Menu size={22} />}
             </button>
           </div>
         </div>
 
-        {/* Мобильное адаптивное меню */}
+        {/* Мобильное адаптивное меню (Drawer / Sheet с touch targets >= 44px) */}
         {open && (
-          <div className="container flex flex-col gap-2 pb-5 pt-3 border-t border-[#edf4fc] text-xs">
-            <Link
+          <>
+            <div
+              className="fixed inset-0 top-15 bg-black/40 backdrop-blur-xs z-40 md:hidden"
               onClick={() => setOpen(false)}
-              className="font-bold py-1.5 text-[#08275b] no-underline"
-              href="/calculator"
-            >
-              Калькулятор
-            </Link>
+              aria-hidden="true"
+            />
+            <div className="fixed inset-x-0 top-15 bottom-0 bg-white z-50 overflow-y-auto p-4 pb-10 space-y-3 shadow-2xl border-t border-[#e2edf9] md:hidden">
+              {/* Главный CTA калькулятора */}
+              <Link
+                onClick={() => setOpen(false)}
+                href="/calculator"
+                className="btn btn-primary w-full min-h-[46px] text-sm font-bold flex items-center justify-between px-4 no-underline rounded-xl"
+              >
+                <span className="flex items-center gap-2">
+                  <Calculator size={18} />
+                  Калькулятор окупаемости
+                </span>
+                <ArrowRight size={16} />
+              </Link>
 
-            <div className="py-1 border-y border-[#edf4fc] space-y-1.5">
-              <span className="text-[10px] font-bold text-[#6a87ad] uppercase tracking-wider block">
-                Анализ:
-              </span>
-              <Link
-                onClick={() => setOpen(false)}
-                className="block pl-2 py-1 text-[#08275b] no-underline"
-                href="/compare"
+              {/* Блок Анализ */}
+              <div className="rounded-xl bg-[#f8fbfe] border border-[#e5effa] p-2.5 space-y-1">
+                <span className="text-[11px] font-extrabold text-[#6483ad] uppercase tracking-wider px-2 py-1 block">
+                  Анализ решений
+                </span>
+                <Link
+                  onClick={() => setOpen(false)}
+                  href="/compare"
+                  className={`min-h-[44px] flex items-center justify-between px-3 py-2 rounded-lg text-xs font-semibold no-underline transition-colors ${
+                    path === "/compare" ? "bg-[#eaf5ff] text-[#0879e8]" : "text-[#08275b] hover:bg-white"
+                  }`}
+                >
+                  <span className="flex items-center gap-2">
+                    <Scale size={16} className="text-[#0879e8]" />
+                    Сравнение решений
+                  </span>
+                  <span className="text-[10px] text-[#718dae]">SaaS vs Dev</span>
+                </Link>
+                <Link
+                  onClick={() => setOpen(false)}
+                  href="/priorities"
+                  className={`min-h-[44px] flex items-center justify-between px-3 py-2 rounded-lg text-xs font-semibold no-underline transition-colors ${
+                    path === "/priorities" ? "bg-[#eaf5ff] text-[#0879e8]" : "text-[#08275b] hover:bg-white"
+                  }`}
+                >
+                  <span className="flex items-center gap-2">
+                    <Target size={16} className="text-[#05b89f]" />
+                    Матрица приоритетов
+                  </span>
+                  <span className="text-[10px] text-[#718dae]">2x2 матрица</span>
+                </Link>
+                <Link
+                  onClick={() => setOpen(false)}
+                  href="/scenarios"
+                  className={`min-h-[44px] flex items-center justify-between px-3 py-2 rounded-lg text-xs font-semibold no-underline transition-colors ${
+                    path === "/scenarios" ? "bg-[#eaf5ff] text-[#0879e8]" : "text-[#08275b] hover:bg-white"
+                  }`}
+                >
+                  <span className="flex items-center gap-2">
+                    <Sparkles size={16} className="text-[#e28c05]" />
+                    Сценарии & What-If
+                  </span>
+                  <span className="text-[10px] text-[#718dae]">Стресс-тесты</span>
+                </Link>
+                <Link
+                  onClick={() => setOpen(false)}
+                  href="/scenarios#what-if"
+                  className="min-h-[44px] flex items-center justify-between px-3 py-2 rounded-lg text-xs font-semibold text-[#08275b] hover:bg-white no-underline transition-colors"
+                >
+                  <span className="flex items-center gap-2">
+                    <SlidersHorizontal size={16} className="text-[#0879e8]" />
+                    What-If / Чувствительность
+                  </span>
+                  <span className="text-[10px] text-[#718dae]">Ползунки 2.0</span>
+                </Link>
+              </div>
+
+              {/* Блок Пилот */}
+              <div className="rounded-xl bg-[#f4fcf9] border border-[#d2f3ea] p-2.5 space-y-1">
+                <span className="text-[11px] font-extrabold text-[#009b86] uppercase tracking-wider px-2 py-1 block">
+                  Пилот и верификация
+                </span>
+                <Link
+                  onClick={() => setOpen(false)}
+                  href="/pilot"
+                  className={`min-h-[44px] flex items-center justify-between px-3 py-2 rounded-lg text-xs font-semibold no-underline transition-colors ${
+                    path === "/pilot" ? "bg-[#dcf6ef] text-[#008775]" : "text-[#08275b] hover:bg-white"
+                  }`}
+                >
+                  <span className="flex items-center gap-2">
+                    <Rocket size={16} className="text-[#05b89f]" />
+                    Пилот 30 дней
+                  </span>
+                  <span className="text-[10px] text-[#718dae]">Регламент</span>
+                </Link>
+                <Link
+                  onClick={() => setOpen(false)}
+                  href="/pilot#plan-fact"
+                  className="min-h-[44px] flex items-center justify-between px-3 py-2 rounded-lg text-xs font-semibold text-[#08275b] hover:bg-white no-underline transition-colors"
+                >
+                  <span className="flex items-center gap-2">
+                    <BarChart2 size={16} className="text-[#0879e8]" />
+                    План vs Факт
+                  </span>
+                  <span className="text-[10px] text-[#718dae]">Вердикт</span>
+                </Link>
+              </div>
+
+              {/* Прямые ссылки */}
+              <div className="space-y-1 pt-1">
+                <Link
+                  onClick={() => setOpen(false)}
+                  href="/cases"
+                  className={`min-h-[44px] flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-bold no-underline transition-colors border ${
+                    path === "/cases"
+                      ? "bg-[#eef5fc] border-[#cce0f6] text-[#0879e8]"
+                      : "bg-white border-[#e5effa] text-[#08275b] hover:bg-[#f8fbff]"
+                  }`}
+                >
+                  <span className="flex items-center gap-2">
+                    <Layers size={16} className="text-[#05b89f]" />
+                    Кейсы и каталог процессов
+                  </span>
+                  <ArrowRight size={14} className="text-slate-400" />
+                </Link>
+
+                <Link
+                  onClick={() => setOpen(false)}
+                  href="/about"
+                  className={`min-h-[44px] flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-bold no-underline transition-colors border ${
+                    path === "/about"
+                      ? "bg-[#eef5fc] border-[#cce0f6] text-[#0879e8]"
+                      : "bg-white border-[#e5effa] text-[#08275b] hover:bg-[#f8fbff]"
+                  }`}
+                >
+                  <span className="flex items-center gap-2">
+                    <HelpCircle size={16} className="text-[#0879e8]" />
+                    О сервисе и методологии
+                  </span>
+                  <ArrowRight size={14} className="text-slate-400" />
+                </Link>
+              </div>
+
+              {/* Мои проекты кнопка */}
+              <button
+                type="button"
+                onClick={() => {
+                  setOpen(false);
+                  setShowProjects(true);
+                }}
+                className="w-full min-h-[46px] flex items-center justify-between px-3.5 py-2.5 rounded-xl font-bold text-xs bg-[#eef8fd] text-[#0879e8] border border-[#cfe5fa] transition-colors"
               >
-                • Сравнение решений
-              </Link>
-              <Link
-                onClick={() => setOpen(false)}
-                className="block pl-2 py-1 text-[#08275b] no-underline"
-                href="/priorities"
-              >
-                • Матрица приоритетов
-              </Link>
-              <Link
-                onClick={() => setOpen(false)}
-                className="block pl-2 py-1 text-[#08275b] no-underline"
-                href="/scenarios"
-              >
-                • Сценарии & What-If
-              </Link>
-              <Link
-                onClick={() => setOpen(false)}
-                className="block pl-2 py-1 text-[#08275b] no-underline"
-                href="/scenarios#what-if"
-              >
-                • What-If / Чувствительность
-              </Link>
+                <span className="flex items-center gap-2">
+                  <FolderKanban size={17} className="text-[#0879e8]" />
+                  Мои проекты и расчёты
+                </span>
+                <span className="px-2 py-0.5 rounded-full bg-[#dbeefa] text-[#0879e8] font-extrabold text-[11px]">
+                  {savedProjects.length}
+                </span>
+              </button>
             </div>
-
-            <div className="py-1 border-b border-[#edf4fc] space-y-1.5">
-              <span className="text-[10px] font-bold text-[#6a87ad] uppercase tracking-wider block">
-                Пилот:
-              </span>
-              <Link
-                onClick={() => setOpen(false)}
-                className="block pl-2 py-1 text-[#08275b] no-underline"
-                href="/pilot"
-              >
-                • Пилот 30 дней
-              </Link>
-              <Link
-                onClick={() => setOpen(false)}
-                className="block pl-2 py-1 text-[#08275b] no-underline"
-                href="/pilot#plan-fact"
-              >
-                • План vs Факт
-              </Link>
-            </div>
-
-            <Link
-              onClick={() => setOpen(false)}
-              className="font-bold py-1 text-[#08275b] no-underline"
-              href="/cases"
-            >
-              Кейсы и каталог
-            </Link>
-
-            <Link
-              onClick={() => setOpen(false)}
-              className="font-bold py-1 text-[#08275b] no-underline"
-              href="/about"
-            >
-              О сервисе
-            </Link>
-
-            <button
-              onClick={() => {
-                setOpen(false);
-                setShowProjects(true);
-              }}
-              className="text-left font-bold text-[#05b89f] py-2 flex items-center gap-1.5 mt-1 border-t border-[#edf4fc]"
-            >
-              <FolderKanban size={16} /> Мои проекты ({savedProjects.length})
-            </button>
-          </div>
+          </>
         )}
       </header>
 

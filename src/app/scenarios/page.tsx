@@ -228,7 +228,7 @@ export default function Scenarios() {
         )}
 
         {/* 4 KPI карточки */}
-        <div className="four-grid analytics-kpis grid grid-cols-4 gap-3 mb-5">
+        <div className="four-grid analytics-kpis grid grid-cols-2 lg:grid-cols-4 gap-3 mb-5">
           <MetricCard
             type="benefit"
             title="Экономический эффект"
@@ -277,7 +277,7 @@ export default function Scenarios() {
               </p>
             </details>
           </div>
-          <div className="three-grid grid grid-cols-3 gap-3">
+          <div className="three-grid grid grid-cols-1 md:grid-cols-3 gap-3">
             {scenarios.map((s, idx) => {
               return (
                 <article className={`scenario-panel ${s.tone}`} key={s.name}>
@@ -539,12 +539,13 @@ export default function Scenarios() {
                   <div className="p-2 rounded-lg bg-[#f8fbff] border border-[#e5eef8]">
                     <div className="flex justify-between items-center text-[10px] text-[#637ba5] mb-0.5">
                       <span>Окупаемость:</span>
-                      <span className="font-bold font-mono text-slate-500">
-                        {whatIfResult.payback !== null && result.payback !== null
-                          ? `${whatIfResult.payback <= result.payback ? "-" : "+"}${Math.abs(
-                              whatIfResult.payback - result.payback
-                            ).toFixed(1)}м`
-                          : "—"}
+                      <span className="font-bold font-mono text-slate-500 text-[10px]">
+                        {(() => {
+                          if (whatIfResult.payback === null || result.payback === null) return "—";
+                          const diff = whatIfResult.payback - result.payback;
+                          if (Math.abs(diff) < 0.05) return "Без изменений";
+                          return `${diff > 0 ? "+" : "−"}${Math.abs(diff).toFixed(1)} мес.`;
+                        })()}
                       </span>
                     </div>
                     <b className="text-sm font-bold text-[#08275b] block">
@@ -574,7 +575,7 @@ export default function Scenarios() {
         </section>
 
         {/* Секция 3: Sensitivity 2.0 & Cash flow */}
-        <section className="two-grid analytics-columns grid grid-cols-2 gap-4 mb-6">
+        <section className="two-grid analytics-columns grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
           {/* 2D Тепловая карта чувствительности */}
           <div className="analytics-panel card p-4">
             <div className="flex items-center justify-between mb-2 flex-wrap gap-2">
@@ -583,7 +584,8 @@ export default function Scenarios() {
                 Анализ чувствительности 2.0
               </h2>
 
-              <div className="flex items-center gap-1 text-[11px]">
+              <div className="flex items-center gap-2 text-[11px]">
+                <span className="md:hidden text-[10px] text-[#0879e8] font-semibold">← Скролл таблицы →</span>
                 <span className="text-[#637ba5]">Метрика:</span>
                 <select
                   className="field h-7 text-[11px] py-0 px-2 w-auto"
@@ -631,7 +633,7 @@ export default function Scenarios() {
             </div>
 
             <div className="table-wrap">
-              <table className="sensitivity-table w-full text-[11px]">
+              <table className="sensitivity-table w-full text-[11px] min-w-[380px]">
                 <caption>
                   Ось X: {varLabels[sensVarX]} → | Ось Y: {varLabels[sensVarY]} ↓
                 </caption>

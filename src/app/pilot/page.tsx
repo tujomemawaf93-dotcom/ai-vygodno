@@ -149,7 +149,7 @@ export default function Pilot() {
       <Header />
       <main className="secondary-page pilot-page">
         <section className="soft-bg">
-          <div className="container hero-grid grid grid-cols-[1fr_1.05fr] gap-10 py-10">
+          <div className="container hero-grid grid grid-cols-1 lg:grid-cols-[1fr_1.05fr] gap-6 lg:gap-10 py-6 lg:py-10">
             <div>
               <span className="eyebrow">БЫСТРЫЙ СТАРТ</span>
               <h1 className="mt-5 text-[51px] font-extrabold tracking-[-.06em]">
@@ -194,7 +194,7 @@ export default function Pilot() {
                   <span>Отчёт</span>
                 </nav>
               </div>
-              <div className="grid grid-cols-2 gap-4 p-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-3">
                 <div>
                   <div className="pilot-title">
                     <h3>Пилот 30 дней</h3>
@@ -277,7 +277,7 @@ export default function Pilot() {
             </button>
           </div>
 
-          <div className="grid grid-cols-[1.5fr_1fr] gap-6 mb-6">
+          <div className="grid grid-cols-1 lg:grid-cols-[1.5fr_1fr] gap-4 lg:gap-6 mb-6">
             {/* Таблица измерений */}
             <div className="card p-4 border-[#dbeaf8]">
               <div className="table-wrap">
@@ -389,7 +389,12 @@ export default function Pilot() {
 
                     {/* Коэффициент качества */}
                     <tr>
-                      <td className="p-2.5 border font-semibold">Коэффициент качества q</td>
+                      <td className="p-2.5 border font-semibold">
+                        Коэффициент качества q
+                        <span className="block text-[10px] font-normal text-[#6280a5]">
+                          Целевое: {Math.round(planQuality * 100)}% · Мин. порог: 85%
+                        </span>
+                      </td>
                       <td className="p-2 text-center border text-xs text-[#52749e]">
                         {Math.round(planQuality * 100)}%
                       </td>
@@ -403,9 +408,12 @@ export default function Pilot() {
                           />
                         </div>
                       </td>
-                      <td className={`p-2.5 text-center border font-semibold ${factQuality >= planQuality ? "text-[#008775] bg-[#ebf8f5]/40" : "text-[#be3853] bg-[#fef1f3]/40"}`}>
+                      <td className={`p-2.5 text-center border font-semibold ${factQuality >= 0.85 ? "text-[#008775] bg-[#ebf8f5]/40" : "text-[#be3853] bg-[#fef1f3]/40"}`}>
                         {factQuality >= planQuality ? "+" : ""}
                         {Math.round((factQuality - planQuality) * 100)} п.п.
+                        {factQuality < planQuality && factQuality >= 0.85 && (
+                          <span className="block text-[9px] font-normal text-[#008775]">≥ порога 85%</span>
+                        )}
                       </td>
                     </tr>
                   </tbody>
@@ -433,12 +441,21 @@ export default function Pilot() {
                 ? "text-[#b45309]"
                 : "text-[#be3853]";
               const deltaRub = actualEffect - planEffect;
-              const humanDeviation =
-                deltaRub < 0
-                  ? `Фактический результат хуже прогноза на ${formatMoney(Math.abs(deltaRub))} / на ${Math.abs(analysis.forecastError)}% ниже планового`
-                  : deltaRub > 0
-                  ? `Фактический результат лучше прогноза на ${formatMoney(deltaRub)} / на ${analysis.forecastError}% выше планового`
-                  : "Фактический результат точно соответствует плану";
+              const formatAbbr = (rub: number) => {
+                const abs = Math.abs(rub);
+                if (abs >= 1_000_000) {
+                  return `${(rub / 1_000_000).toLocaleString("ru-RU", { maximumFractionDigits: 2 })} млн ₽`;
+                }
+                if (abs >= 10_000) {
+                  return `${Math.round(rub / 1_000).toLocaleString("ru-RU")} тыс. ₽`;
+                }
+                return formatMoney(rub);
+              };
+
+              const humanPrimary = `Фактический эффект: ${formatAbbr(actualEffect)} против плановых ${formatAbbr(planEffect)}`;
+              const absError = Math.abs(analysis.forecastError);
+              const errorLabel = absError > 1000 ? "> 1000%" : `${analysis.forecastError > 0 ? "+" : ""}${analysis.forecastError}%`;
+              const humanDeviation = `Отклонение от прогноза: ${deltaRub >= 0 ? "+" : "−"}${formatAbbr(Math.abs(deltaRub))} (${errorLabel})`;
 
               const verdictIcon = isScale
                 ? "/assets/verdict-scale.png"
@@ -458,7 +475,7 @@ export default function Pilot() {
                       </span>
                     </div>
 
-                    <div className="flex items-center gap-3 mb-2">
+                    <div className="flex items-center gap-3 mb-3">
                       <Image
                         src={verdictIcon}
                         alt={analysis.verdict}
@@ -472,11 +489,12 @@ export default function Pilot() {
                       </h3>
                     </div>
 
-                    <div className="p-2.5 rounded-lg bg-white/80 border border-slate-200/60 text-xs font-semibold text-[#08275b] mb-3">
-                      {humanDeviation}
+                    <div className="p-3 rounded-xl bg-white/90 border border-slate-200/70 text-xs text-[#08275b] mb-3 space-y-1">
+                      <div className="font-bold text-[13px]">{humanPrimary}</div>
+                      <div className="text-[12px] font-medium text-[#486895]">{humanDeviation}</div>
                     </div>
 
-                    <div className="space-y-2 text-xs bg-white p-3 rounded-xl border border-slate-200/80 mb-3">
+                    <div className="space-y-2.5 text-xs bg-white p-3.5 rounded-xl border border-slate-200/80 mb-3">
                       <div className="flex justify-between items-center">
                         <span className="text-[#6280a5]">Фактический эффект:</span>
                         <b className="text-sm text-[#008775]">
@@ -487,11 +505,27 @@ export default function Pilot() {
                         <span className="text-[#6280a5]">Фактический ROI:</span>
                         <b className="text-sm text-[#08275b]">{formatROI(actualRoi)}</b>
                       </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-[#6280a5]">Качество результата:</span>
-                        <b className={`text-xs ${factQuality >= 0.85 ? "text-[#008775]" : "text-[#b45309]"}`}>
-                          {Math.round(factQuality * 100)}% (цель: {Math.round(planQuality * 100)}%)
-                        </b>
+                      <div className="pt-2 border-t border-slate-100 space-y-1">
+                        <div className="flex justify-between items-center">
+                          <span className="text-[#6280a5]">Качество результата:</span>
+                          <b className={`text-xs font-bold ${factQuality >= 0.85 ? "text-[#008775]" : "text-[#b45309]"}`}>
+                            Факт: {Math.round(factQuality * 100)}%
+                          </b>
+                        </div>
+                        <div className="flex justify-between text-[11px] text-[#6280a5]">
+                          <span>Целевое качество: <b>{Math.round(planQuality * 100)}%</b></span>
+                          <span>Мин. порог: <b>85%</b></span>
+                        </div>
+                        {factQuality < planQuality && factQuality >= 0.85 && (
+                          <div className="text-[11px] text-[#008775] bg-[#ebf8f5] p-2 rounded-lg mt-1 font-medium leading-tight">
+                            Ниже целевого значения, но выше минимально допустимого порога.
+                          </div>
+                        )}
+                        {factQuality < 0.85 && (
+                          <div className="text-[11px] text-[#be3853] bg-[#fef1f3] p-2 rounded-lg mt-1 font-medium leading-tight">
+                            Ниже минимально допустимого порога (85%). Требуется доработка промптов.
+                          </div>
+                        )}
                       </div>
                     </div>
 
@@ -563,7 +597,7 @@ export default function Pilot() {
             </div>
           </div>
 
-          <div className="two-grid mt-6 grid grid-cols-[1fr_1fr] gap-4">
+          <div className="two-grid mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
             <section id="pilot-checklist" className="card p-5">
               <div className="flex items-center justify-between mb-3">
                 <h2 className="m-0 text-xl font-extrabold flex items-center gap-2">

@@ -223,7 +223,7 @@ export default function CalculatorPage() {
   return (
     <>
       <Header />
-      <main className="container calculator-page py-6">
+      <main className="container calculator-page py-6 pb-20 lg:pb-6">
         {/* Хлебные крошки и заголовок */}
         <div className="mb-5 flex flex-wrap items-start justify-between gap-4">
           <div>
@@ -301,7 +301,7 @@ export default function CalculatorPage() {
           </div>
         </div>
 
-        <div className="calc-grid grid grid-cols-[1.85fr_1fr] gap-4">
+        <div className="calc-grid grid grid-cols-1 lg:grid-cols-[1.85fr_1fr] gap-4">
           {/* Левая колонка: Форма ввода */}
           <form
             className="space-y-4"
@@ -359,7 +359,7 @@ export default function CalculatorPage() {
                     <p className="text-xs text-[#50709b] mb-3">
                       Отметьте утверждения, справедливые для вашего процесса:
                     </p>
-                    <div className="grid grid-cols-2 gap-2 text-xs">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
                       {DIAGNOSTIC_QUESTIONS.map((q) => {
                         const isChecked = !!inputs.diagnostic[q.key];
                         return (
@@ -1299,7 +1299,7 @@ export default function CalculatorPage() {
           </form>
 
           {/* Правая колонка: Результаты расчёта, метрики и действия */}
-          <aside className="result-side sticky top-20 h-fit space-y-2.5">
+          <aside id="calc-results" className="result-side sticky top-20 h-fit space-y-2.5">
             {/* 1. Блок Рекомендации НАВЕРХУ */}
             <div
               className="card p-3.5 transition-all"
@@ -1715,6 +1715,31 @@ export default function CalculatorPage() {
           </aside>
         </div>
       </main>
+
+      {/* Мобильная плашка с экспресс-итогами расчёта */}
+      <div className="lg:hidden fixed bottom-0 inset-x-0 bg-white/95 backdrop-blur-md border-t border-[#d8e6f4] px-4 py-2.5 shadow-[0_-4px_20px_rgba(8,39,91,0.09)] z-30 flex items-center justify-between gap-3">
+        <div className="min-w-0">
+          <span className="text-[10px] text-[#637ba5] block leading-tight">Эффект в год</span>
+          <b className={`text-sm font-extrabold truncate block ${result.effect >= 0 ? "text-[#009b86]" : "text-rose-600"}`}>
+            {formatMoney(result.effect)}
+          </b>
+        </div>
+        <div className="text-center min-w-0">
+          <span className="text-[10px] text-[#637ba5] block leading-tight">ROI · Срок</span>
+          <b className="text-xs font-bold text-[#08275b] block">
+            {formatROI(result.roi)} · {formatPayback(result.payback)}
+          </b>
+        </div>
+        <button
+          type="button"
+          onClick={() => {
+            document.getElementById("calc-results")?.scrollIntoView({ behavior: "smooth" });
+          }}
+          className="btn btn-primary text-xs py-1.5 px-3 min-h-[38px] whitespace-nowrap"
+        >
+          Результаты ↓
+        </button>
+      </div>
 
       <Footer />
       <CalculationReport />

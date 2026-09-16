@@ -302,12 +302,13 @@ export const formatROI = (n: number) =>
     ? n.toLocaleString("ru-RU", { maximumFractionDigits: 1 }) + "%"
     : "Не определяется";
 
-export const formatPayback = (n: number | null) =>
-  n === null
-    ? "Нет окупаемости"
-    : n < 0.1
-    ? "< 0,1 мес."
-    : n.toLocaleString("ru-RU", { maximumFractionDigits: 1 }) + " мес.";
+export const formatPayback = (n: number | null) => {
+  if (n === null) return "Нет окупаемости";
+  if (Math.abs(n) < 0.05) return "0 мес.";
+  if (n < 0.1 && n > 0) return "< 0,1 мес.";
+  const val = Math.abs(n) < 0.05 ? 0 : n;
+  return val.toLocaleString("ru-RU", { maximumFractionDigits: 1 }) + " мес.";
+};
 
 export const isAbnormal = (i: Inputs, r: Result) =>
   r.roi > 1000 ||

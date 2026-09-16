@@ -44,3 +44,5 @@ ai-vygodno/
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+.vercel

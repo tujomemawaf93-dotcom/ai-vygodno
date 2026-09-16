@@ -486,8 +486,9 @@ export default function ComparePage() {
                 <Scale size={18} className="text-[#05b89f]" />
                 Сравнительная таблица решений
               </h2>
-              <span className="text-xs text-[#637ba5]">
-                Зелёным подсвечены наилучшие финансовые значения в строке
+              <span className="text-xs text-[#637ba5] flex items-center gap-1">
+                <span className="hidden md:inline">Зелёным подсвечены наилучшие финансовые значения в строке</span>
+                <span className="md:hidden font-semibold text-[#0879e8]">← Прокрутите таблицу вправо →</span>
               </span>
             </div>
 
@@ -723,7 +724,7 @@ export default function ComparePage() {
         )}
 
         {/* Визуальное сравнение: Диаграммы BarChart */}
-        <div className="grid grid-cols-2 gap-4 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
           <div className="card p-4">
             <h3 className="text-sm font-bold text-[#08275b] mb-1">
               Экономический эффект первого года vs Затраты 1-го года (тыс. ₽)

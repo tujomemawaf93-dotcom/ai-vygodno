@@ -326,7 +326,7 @@ export default function PrioritiesPage() {
         </div>
 
         {/* Матрица приоритетов 2x2 (Scatter plot) */}
-        <div className="grid grid-cols-[1.65fr_1fr] gap-6 mb-6">
+        <div className="grid grid-cols-1 lg:grid-cols-[1.65fr_1fr] gap-4 lg:gap-6 mb-6">
           <div className="card p-4">
             <div className="flex items-center justify-between mb-2">
               <h2 className="text-base font-bold text-[#08275b] flex items-center gap-2 m-0">
@@ -400,7 +400,7 @@ export default function PrioritiesPage() {
             </div>
 
             {/* Легенда 4 квадрантов */}
-            <div className="grid grid-cols-4 gap-2 mt-2 pt-3 border-t border-[#eaf2fb] text-[11px]">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-2 pt-3 border-t border-[#eaf2fb] text-[11px]">
               <div className="p-2 rounded-lg bg-[#ebf8f5] border border-[#a5dfd4]">
                 <b className="text-[#008775] block">★ Быстрые победы</b>
                 <span className="text-[#2b6559]">Высокий эффект, низкая сложность. Запускать в 1-ю очередь!</span>
@@ -541,8 +541,9 @@ export default function PrioritiesPage() {
               <FolderKanban size={18} className="text-[#0879e8]" />
               Портфель ИИ-проектов компании
             </h2>
-            <span className="text-xs text-[#637ba5]">
-              Хранится локально в вашем браузере
+            <span className="text-xs text-[#637ba5] flex items-center gap-1">
+              <span className="hidden md:inline">Хранится локально в вашем браузере</span>
+              <span className="md:hidden font-semibold text-[#0879e8]">← Прокрутите таблицу →</span>
             </span>
           </div>
 

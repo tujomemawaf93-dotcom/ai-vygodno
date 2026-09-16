@@ -32,7 +32,7 @@ const FORMULAS = [
   {
     title: "Реализуемая выгода",
     formula: "B = B_пот × q × k",
-    desc: "Потенциальная выгода с поправкой на качество черновиков q (0.8–0.95) и коэффициент реализации k (0.7–0.85).",
+    desc: "Потенциальная выгода с поправкой на качество черновиков q (например, 0,8–0,95) и коэффициент реализации k (например, 0,7–0,85 в сценарной модели).",
   },
   {
     title: "Рентабельность инвестиций",
@@ -53,7 +53,7 @@ export default function About() {
       <main className="secondary-page about-page">
         {/* Hero Section */}
         <section className="soft-bg">
-          <div className="container two-grid grid grid-cols-[1.1fr_.9fr] items-center gap-10 py-10">
+          <div className="container two-grid grid grid-cols-1 lg:grid-cols-[1.1fr_.9fr] items-center gap-6 lg:gap-10 py-8 lg:py-10">
             <div>
               <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#ebf8f5] border border-[#a5dfd4] text-[11px] font-bold text-[#008775] mb-2">
                 <ProductIcon name="accent-ai-roi" size={16} />
@@ -127,7 +127,7 @@ export default function About() {
             </div>
           </div>
 
-          <div className="three-grid grid grid-cols-3 gap-3">
+          <div className="three-grid grid grid-cols-1 md:grid-cols-3 gap-3">
             {METRICS_LIST.map((m) => (
               <article
                 className="card p-4 flex items-start gap-3 border-[#e5effa] hover:border-[#b4d4f7] transition-all"
@@ -201,7 +201,7 @@ export default function About() {
               <ul className="space-y-2.5 text-xs text-[#52749e]">
                 {[
                   "Не даёт безоговорочных гарантий прибыли без замеров на реальных процессах",
-                  "Не заменяет пилотное тестирование в вашей команде (30-дневный пилот обязателен)",
+                  "Не заменяет пилотное тестирование в вашей команде (30-дневный пилот рекомендуется для подтверждения расчёта перед масштабированием)",
                   "Не отправляет конфиденциальные данные компании во внешние непроверенные сервисы",
                   "Не навязывает конкретного вендора или инструмент: расчёт объективен",
                   "Не заменяет управленческую ответственность руководителя",
@@ -232,7 +232,7 @@ export default function About() {
             </span>
           </div>
 
-          <div className="formula-grid grid grid-cols-4 gap-3">
+          <div className="formula-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
             {FORMULAS.map((item) => (
               <article className="formula-card card p-4 border-[#dbe8f6]" key={item.title}>
                 <h3 className="text-xs font-semibold text-[#5a7ba3] m-0 mb-2">{item.title}</h3>
@@ -246,7 +246,7 @@ export default function About() {
             ))}
           </div>
 
-          <div className="model-limit-note mt-4 p-3.5 rounded-xl bg-[#f4f9fd] border border-[#d6e7f8] flex items-center justify-between gap-3 text-xs text-[#486e9e]">
+          <div className="model-limit-note mt-4 p-3.5 rounded-xl bg-[#f4f9fd] border border-[#d6e7f8] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs text-[#486e9e]">
             <div className="flex items-center gap-2.5">
               <Info size={18} className="text-[#0879e8] shrink-0" />
               <span>

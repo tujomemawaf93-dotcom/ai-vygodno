@@ -212,13 +212,13 @@ export default function Cases() {
                   <p className="muted text-xs mb-3">{c.description}</p>
                   <div className="case-metrics">
                     <span>
-                      <b>{c.metrics.hours}</b>в месяц
+                      <b>{c.metrics.hours}</b> в месяц
                     </span>
                     <span>
-                      <b>{c.metrics.roi}</b>ROI
+                      <b>{c.metrics.roi}</b> ROI
                     </span>
                     <span>
-                      <b>{c.metrics.payback}</b>окупаемость
+                      <b>{c.metrics.payback}</b> окупаемость
                     </span>
                   </div>
                   <details className="case-detail mt-2">
@@ -266,7 +266,7 @@ export default function Cases() {
             </span>
           </div>
 
-          <div className="grid grid-cols-3 gap-3.5 mt-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 mt-4">
             {shownTemplates.map((tpl) => (
               <article
                 key={tpl.id}
@@ -302,8 +302,8 @@ export default function Cases() {
                   </p>
                 </div>
 
-                <div className="mt-3 pt-3 border-t border-[#edf4fc] flex items-center justify-between">
-                  <span className="text-[11px] text-[#6080ad]">
+                <div className="mt-3 pt-3 border-t border-[#edf4fc] flex items-center justify-between gap-2 flex-wrap">
+                  <span className="text-[11px] text-[#6080ad] font-medium">
                     Ориентир: ~{tpl.defaults.hours} ч/мес.
                   </span>
                   <button
@@ -330,7 +330,7 @@ export default function Cases() {
             </div>
           </div>
 
-          <div className="three-grid grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-3">
             {[
               {
                 id: "kb-data",
@@ -356,7 +356,7 @@ export default function Cases() {
                 color: "#0879e8",
                 bg: "#eff6ff",
                 fullText:
-                  "Никогда не считайте всю высвобожденную минуту как 100% чистой прибыли. Время становится деньгами только если сотрудники берут больше задач или сокращаются внешние расходы на подрядчиков. Коэффициент k (обычно 0.7–0.85) страхует модель от завышенных ожиданий.",
+                  "Никогда не считайте всю высвобожденную минуту как 100% чистой прибыли. Время становится деньгами только если сотрудники берут больше задач или сокращаются внешние расходы на подрядчиков. Коэффициент k (например, 0,7–0,85 в сценарной модели) страхует модель от завышенных ожиданий.",
               },
               {
                 id: "kb-measure",

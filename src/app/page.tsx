@@ -266,7 +266,7 @@ export default function Home() {
               Все возможности <ArrowRight size={16} />
             </Link>
           </div>
-          <div className="six-grid feature-grid grid grid-cols-6 gap-5">
+          <div className="six-grid feature-grid grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 sm:gap-5">
             {features.map(([type, title, body, assetPath]) => (
               <article className="feature-item p-3 group transition-transform hover:-translate-y-0.5" key={title}>
                 <div className="mb-3">
@@ -288,7 +288,7 @@ export default function Home() {
                 Подробнее о процессе <ArrowRight size={16} />
               </Link>
             </div>
-            <div className="step-grid home-flow mt-5 grid grid-cols-3 gap-7">
+            <div className="step-grid home-flow mt-5 grid grid-cols-1 md:grid-cols-3 gap-5 md:gap-7">
               {[
                 [
                   "Введите данные",
@@ -361,7 +361,7 @@ export default function Home() {
               Сравнить сценарии <ArrowRight size={17} />
             </Link>
           </div>
-          <div className="three-grid mt-4 grid grid-cols-3 gap-4">
+          <div className="three-grid mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
             {scenarios.map(
               ({ title, subtitle, tone, asset, result }, idx) => (
                 <article className={`home-scenario ${tone}`} key={title}>
