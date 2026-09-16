@@ -1,0 +1,48 @@
+.calculation-report { display: none; }
+.calculator-page .result-side .metric-value {font-size: 22px;line-height: 1.25;margin-top: 3px;}
+.calculator-page .result-side .card {box-shadow: none;}
+.calculator-page .result-side .icon-disc {width: 42px;height: 42px;flex-shrink: 0;}
+.calculator-page .result-side .icon-disc svg {width: 23px;height: 23px;}
+.calculator-page .result-side .card .card {padding: 11px 12px;}
+.calculator-page .field-label {font-weight: 550;}
+.calculator-page .field {padding-top: 9px;padding-bottom: 9px;}
+.calculator-page .readiness-details summary::marker {font-size: 10px;color: #049f8b;}
+@media (max-width: 760px) {
+ .calculator-page h1 {font-size: 32px;line-height: 1.12;}
+ .calculator-page .result-side {position: static;}
+}
+@media print {
+ @page {size: A4; margin: 13mm;}
+ body:has(.calculation-report) > header,
+ body:has(.calculation-report) > main,
+ body:has(.calculation-report) > footer,
+ body:has(.calculation-report) nextjs-portal {display:none !important;}
+ body:has(.calculation-report) {background: white !important;font-size: 10px;color: #0c2855;}
+ .calculation-report {display:block !important;max-width:none;font: 10px/1.45 Arial,sans-serif;color:#12305a; print-color-adjust:exact;-webkit-print-color-adjust:exact;}
+ .calculation-report * {box-shadow:none !important;}
+ .report-heading {display:flex;align-items:center;justify-content:space-between;gap:20px;border-bottom:2px solid #07a892;padding-bottom:12px;}
+ .report-heading img {width:155px;height:auto;}
+ .report-heading p {margin:3px 0 0;color:#62758b;}
+ .report-heading div {text-align:right;}
+ .calculation-report h1 {font-size:24px;line-height:1.2;margin:15px 0 5px;letter-spacing:-.5px;}
+ .calculation-report h2 {font-size:14px;margin:14px 0 7px;}
+ .report-subtitle,.report-small {color:#61748e;}
+ .report-kpis {display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:15px 0;}
+ .report-kpis > div {background:#eff8f8;border-radius:6px;padding:10px;}
+ .report-kpis span {display:block;font-size:9px;}
+ .report-kpis strong {display:block;font-size:16px;margin-top:5px;}
+ .report-inputs {display:grid;grid-template-columns:1fr 1fr;gap:0 22px;margin:0;}
+ .report-inputs > div {display:flex;justify-content:space-between;gap:10px;border-bottom:1px solid #e8edf3;padding:4px 0;break-inside:avoid;}
+ .report-inputs dt {color:#65758d;}
+ .report-inputs dd {margin:0;text-align:right;font-weight:600;}
+ .report-economics {display:grid;grid-template-columns:repeat(3,1fr);gap:10px;background:#f5f8fc;padding:0 10px;}
+ .calculation-report table {border-collapse:collapse;width:100%;font-size:10px;}
+ .calculation-report th,.calculation-report td {padding:8px 6px;text-align:left;border-bottom:1px solid #e0e8ef;}
+ .calculation-report thead {background:#edf4fa;}
+ .calculation-report section {break-inside:avoid;}
+ .report-recommendation {background:#eff8f5;border-left:3px solid #0aab92;padding:8px 12px;margin-top:12px;}
+ .report-recommendation h2 {margin-top:0;}
+ .report-limits {font-size:9px;color:#62758b;}
+ .report-bottom {border-top:1px solid #dce6ef;padding-top:8px;margin-top:14px;color:#74869e;font-size:9px;}
+ .report-note {padding:6px;background:#fff6e8;}
+}
